@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "milex_scheduler"
+authors = [
+    {name = "Alexandre Adam", email = "alexandre.adam@umontreal.ca"}
+    ]
+description = "The Milex project job scheduler for the HPC cluster and code reproducibility"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "paramiko",
+]
+version = "0.1.0"
+
+[project.optional-dependencies]
+test = [
+  "pytest",
+  "pytest-cov[all]",
+  "pytest-mock",
+]
+lint = [
+  "black",
+  "flake8"
+]
+
+[project.scripts]
+milex-configuration = "milex_scheduler.apps.milex_configuration:main"
+milex-run = "milex_scheduler.apps.milex_run:main"
+milex-schedule = "milex_scheduler.apps.milex_schedule:main"
+
