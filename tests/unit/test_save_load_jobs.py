@@ -1,10 +1,10 @@
-from milex.scheduler.save_load_jobs import (
+from milex_scheduler.save_load_jobs import (
     load_jobs,
     save_jobs,
     transfer_script_to_remote,
     get_nearest_job_file
 )
-from milex import DATE_FORMAT
+from milex_scheduler import DATE_FORMAT
 from unittest.mock import patch
 from unittest.mock import MagicMock
 from datetime import datetime
@@ -66,7 +66,7 @@ def mock_job_script(tmp_path):
 def mock_load_config(tmp_path):
     mock_config = {"local": {"path": tmp_path}}
     os.makedirs(tmp_path / "jobs", exist_ok=True)
-    with patch("milex.scheduler.save_load_jobs.load_config", return_value=mock_config) as mock_load_config:
+    with patch("milex_scheduler.save_load_jobs.load_config", return_value=mock_config) as mock_load_config:
         yield mock_load_config
 
 

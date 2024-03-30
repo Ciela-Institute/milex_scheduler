@@ -1,7 +1,7 @@
 import pytest
 from io import StringIO
 from unittest.mock import patch
-from milex.scheduler.job_to_slurm import write_slurm_script_content
+from milex_scheduler.job_to_slurm import write_slurm_script_content
 from milex import load_config
 
 

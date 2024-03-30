@@ -1,7 +1,6 @@
 import pytest
 from argparse import Namespace
 from unittest.mock import patch
-
 from milex_scheduler.utils import machine_config
 
 
@@ -36,7 +35,7 @@ def mock_load_config(tmp_path):
         },
     }
     with patch(
-        "milex.scripts.utils.load_config", return_value=mock_config
+        "milex_scheduler.utils.load_config", return_value=mock_config
     ) as mock_load_config:
         yield mock_load_config
 

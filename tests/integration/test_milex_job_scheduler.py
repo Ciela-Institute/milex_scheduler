@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from milex.scripts.milex_schedule import parse_job_args, parse_args, main
+from milex_scheduler.apps.milex_schedule import parse_job_args, parse_args, main
 from argparse import Namespace
 import os
 import json
@@ -23,7 +23,7 @@ def mock_run_jobs():
     We avoid the full integration of run_jobs, which is integrated in another test (see test_job_runner.py)
     Here, we test up until the point where run_jobs is called.
     """
-    with patch("milex.scripts.milex_schedule.run_jobs") as mock_run_jobs:
+    with patch("milex_scheduler.apps.milex_schedule.run_jobs") as mock_run_jobs:
         yield mock_run_jobs
 
 
@@ -63,16 +63,15 @@ def mock_load_config(monkeypatch,  tmp_path):
     os.makedirs(tmp_path / "slurm", exist_ok=True)
 
     # Patch all the instances of load_config to save and load jobs from the tmp_path
-    monkeypatch.setattr("milex.scheduler.save_load_jobs.load_config", lambda: mock_config)
-    monkeypatch.setattr("milex.scheduler.job_to_slurm.load_config", lambda: mock_config)
-    monkeypatch.setattr("milex.scheduler.job_dependency.load_config", lambda: mock_config)
-    monkeypatch.setattr("milex.scheduler.job_runner.load_config", lambda: mock_config)
-    monkeypatch.setattr("milex.scheduler.run_slurm.load_config", lambda: mock_config)
-    monkeypatch.setattr("milex.scheduler.utils.load_config", lambda: mock_config)
-    monkeypatch.setattr("milex.scripts.utils.load_config", lambda: mock_config)
+    monkeypatch.setattr("milex_scheduler.save_load_jobs.load_config", lambda: mock_config)
+    monkeypatch.setattr("milex_scheduler.job_to_slurm.load_config", lambda: mock_config)
+    monkeypatch.setattr("milex_scheduler.job_dependency.load_config", lambda: mock_config)
+    monkeypatch.setattr("milex_scheduler.job_runner.load_config", lambda: mock_config)
+    monkeypatch.setattr("milex_scheduler.run_slurm.load_config", lambda: mock_config)
+    monkeypatch.setattr("milex_scheduler.utils.load_config", lambda: mock_config)
     
     
-    with patch("milex.load_config", return_value=mock_config) as mock_load_config:
+    with patch("milex_scheduler.load_config", return_value=mock_config) as mock_load_config:
         yield mock_load_config
 
 

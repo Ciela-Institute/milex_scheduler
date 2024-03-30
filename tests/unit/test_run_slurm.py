@@ -1,8 +1,8 @@
 import pytest
 from unittest.mock import patch, MagicMock, Mock
 from unittest.mock import Mock
-from milex.scheduler.run_slurm import get_job_id_from_sbatch_output
-from milex.scheduler.run_slurm import run_script_remotely, run_script_locally
+from milex_scheduler.run_slurm import get_job_id_from_sbatch_output
+from milex_scheduler.run_slurm import run_script_remotely, run_script_locally
 
 
 @pytest.fixture

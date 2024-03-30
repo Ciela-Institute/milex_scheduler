@@ -1,7 +1,7 @@
 import os
 import pytest
 from unittest.mock import patch, MagicMock
-from milex.scheduler import save_jobs, run_jobs
+from milex_scheduler import save_jobs, run_jobs
 from glob import glob
 
 # Mock Data for Job Configurations
@@ -130,12 +130,12 @@ def mock_load_config(monkeypatch,  tmp_path):
     os.makedirs(tmp_path / "slurm", exist_ok=True)
 
     # Patch all the instances of load_config to save and load jobs from the tmp_path
-    monkeypatch.setattr("milex.scheduler.save_load_jobs.load_config", lambda: mock_config)
-    monkeypatch.setattr("milex.scheduler.job_to_slurm.load_config", lambda: mock_config)
-    monkeypatch.setattr("milex.scheduler.job_dependency.load_config", lambda: mock_config)
-    monkeypatch.setattr("milex.scheduler.job_runner.load_config", lambda: mock_config)
-    monkeypatch.setattr("milex.scheduler.run_slurm.load_config", lambda: mock_config)
-    monkeypatch.setattr("milex.scheduler.utils.load_config", lambda: mock_config)
+    monkeypatch.setattr("milex_scheduler.save_load_jobs.load_config", lambda: mock_config)
+    monkeypatch.setattr("milex_scheduler.job_to_slurm.load_config", lambda: mock_config)
+    monkeypatch.setattr("milex_scheduler.job_dependency.load_config", lambda: mock_config)
+    monkeypatch.setattr("milex_scheduler.job_runner.load_config", lambda: mock_config)
+    monkeypatch.setattr("milex_scheduler.run_slurm.load_config", lambda: mock_config)
+    monkeypatch.setattr("milex_scheduler.utils.load_config", lambda: mock_config)
     
     with patch("milex.load_config", return_value=mock_config) as mock_load_config:
         yield mock_load_config
@@ -143,7 +143,7 @@ def mock_load_config(monkeypatch,  tmp_path):
 
 # Mocking File I/O and Remote SSH interactions
 @patch("paramiko.SSHClient", new_callable=lambda: setup_mock_ssh_client)
-@patch("milex.scheduler.run_slurm.run_script_remotely")
+@patch("milex_scheduler.run_slurm.run_script_remotely")
 def test_integration_schedule_jobs(
         mock_run_script_remotely,
         mock_ssh_client,
@@ -194,7 +194,7 @@ mock_jobs_error = {
 }
 # Mocking File I/O and Remote SSH interactions
 @patch("paramiko.SSHClient", new_callable=lambda: setup_mock_ssh_client)
-@patch("milex.scheduler.run_slurm.run_script_remotely")
+@patch("milex_scheduler.run_slurm.run_script_remotely")
 def test_integration_schedule_jobs_with_error(
         mock_run_script_remotely,
         mock_ssh_client,
