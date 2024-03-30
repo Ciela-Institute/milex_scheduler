@@ -21,7 +21,7 @@ As such, `milex-schedule` offer the following abstractions:
 3. As a bonus, you can also run `milex-schedule` from your laptop and it will send the job to the cluster through SSH
 
 Your python scripts needs to be modified very minimally in order to be scheduled. And, since all your user information are abstracted away 
-by [`milex-configuration`](# Milex Configuration), the call to `milex-schedule` is completely reproducible from another user perspective (assuming they use SLURM). 
+by [`milex-configuration`](#Milex-Configuration), the call to `milex-schedule` is completely reproducible from another user perspective (assuming they use SLURM). 
 
 We also have `milex-run job_name` which minimally takes only the name of your job and will run the latest JSON configuration file created (or one of your choosing).
 
@@ -58,7 +58,7 @@ def cli():
     sys.exit(0)
 ```
 
-This second function is then registered as an application in the `pyproject.toml` file (see [this section](## Registering Your Application)). 
+This second function is then registered as an application in the `pyproject.toml` file (see [this section](##Registering-Your-Application)). 
 It is separated from the `parse_args` function because we must include a `sys.exit(0)` after successfull completion of `parse_args`.
 This allows `milex-schedule` to use `subprocess.run[f"{your-job-name}-cli"]` to parse your job specific arguments.
 Finally, the print statement is included there so that `milex-schedule` can capture the output of the `cli` from the command line. 
@@ -121,7 +121,7 @@ milex-schedule your-application --run-now --machine=name_of_machine\
 ```
 
 The machine argument is optional, in which case the *local* machine is used.
-The name of the machine is one in `.milexconfig` configured with [`milex-configuration`](# Milex Configuration). 
+The name of the machine is one in `.milexconfig` configured with [`milex-configuration`](#Milex-Configuration). 
 Below we give the complete list of arguments in case you want to customize a schedule and/or override some of the machine configuration.
 
 **Note**: The slurm account is dealt with through the machine configuration (and so is the virtual environment).
