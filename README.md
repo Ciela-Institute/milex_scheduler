@@ -7,7 +7,7 @@ This means that we don't need to create/modify a SLURM script for every job. Rat
 milex-schedule my-application --time=12-00:00 --gres=gpu:1
 ```
 Some information like the SLURM account or the virtual environment in which the application needs to run are abstracted away by running 
-[`milex-configuration`](configuration) only once the package is installed.
+[`milex-configuration`](#Milex-Configuration) only once the package is installed.
 
 
 # Scheduling a script
@@ -58,7 +58,7 @@ def cli():
     sys.exit(0)
 ```
 
-This second function is then registered as an application in the `pyproject.toml` file (see [this section](##Registering-Your-Application)). 
+This second function is then registered as an application in the `pyproject.toml` file (see [this section](#Registering-Your-Application)). 
 It is separated from the `parse_args` function because we must include a `sys.exit(0)` after successfull completion of `parse_args`.
 This allows `milex-schedule` to use `subprocess.run[f"{your-job-name}-cli"]` to parse your job specific arguments.
 Finally, the print statement is included there so that `milex-schedule` can capture the output of the `cli` from the command line. 
