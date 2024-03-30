@@ -106,9 +106,9 @@ Below is a template to guide you in structuring your application correctly.
 
 Here is an example of an argument parser:
 ```python
-import argparse
 
 def parse_args():
+    import argparse
     parser = argparse.ArgumentParser(description="Your application description here.")
     # Define your arguments here
     parser.add_argument('--example', type=str, help='Example argument')
@@ -140,11 +140,13 @@ then proceed with the application's main logic using these arguments.
 
 ```python
 def main():
+    import ...
     args = parse_args()
     # Application logic goes here
 ```
 No other structure is imposed on your script, other than it be registered as a command line application. If you have import that require running code or
-for heavy packages like torch, consider putting these imports in the main function so that `cli` can remain very light. 
+for heavy packages like torch, consider putting these imports in the main function so that `cli` can remain very light. Having heavy import placed at the root
+level of the file is the main reason for slow scheduling of jobs.
 
 ## Registering Your Application
 
