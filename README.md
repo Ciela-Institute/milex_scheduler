@@ -132,7 +132,7 @@ The pre-commands allow you to modify the automatically created shell script to i
 copying a file to the server where the job is being run etc.
 
 
-(configurations)=
+(configuration)=
 # Milex Configuration
 
 This document provides detailed instructions for configuring Milex to run jobs using SLURM, either on a local machine or a remote cluster via SSH. It includes steps for creating an SSH key to securely access the cluster.
@@ -164,7 +164,7 @@ The directory structure post-configuration will be:
 1. **Run the Configuration Script**: After installing the Milex package, execute the configuration script by running the following command:
 
     ```bash
-    milex-configurations
+    milex-configuration
     ```
 
    This command will open a configuration file in the default text editor of `git` (or `nano` if it is not set) for you to edit.
