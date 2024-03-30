@@ -1,30 +1,100 @@
 # Milex Scheduler
 
-This package offer some abstractions to work with the cluster to make the scheduling process a bit more straightforward and reproducible. 
-This means that we don't need to create/modify a SLURM script for every job. Rather, we can schedule an application as follows:
+Milex Scheduler is a package that simplifies the process of scheduling and running jobs on a SLURM cluster. It provides an abstraction layer over the SLURM shell scripts, allowing you to schedule jobs with a single command line interface (CLI) tool.
 
-```shell
-milex-schedule my-application --time=12-00:00 --gres=gpu:1
+## Key Features
+
+- **Simplified Job Scheduling**: Schedule jobs on a SLURM cluster with a single command, without the need to write complex SLURM scripts.
+- **Reproducibility**: Job configurations are saved as JSON files, making it easy to reproduce and share job setups.
+- **User-Agnostic**: User-specific details like SLURM accounts and virtual environments are abstracted away, ensuring reproducibility across different users.
+- **Local and Remote Execution**: Run jobs on both local and remote machines.
+
+## Installation
+
+1. Install the Milex-scheduler package
+
+```bash
+git clonegit@github.com:Ciela-Institute/milex_scheduler.git
+cd milex_scheduler
+pip install -e .
 ```
-Some information like the SLURM account or the virtual environment in which the application needs to run are abstracted away by running 
-[`milex-configuration`](#Milex-Configuration) only once the package is installed.
+
+2. Configure Milex for your environment by running:
+
+```bash
+milex-configuration
+```
+
+This command will guide you through setting up your local and remote machine configurations, including specifying paths, virtual environments, and SLURM accounts.
+
+## Usage
+
+### Scheduling a Job
+
+To schedule a job, use the `milex-schedule` command:
+
+```bash
+milex-schedule your-application \
+    --time=00-01:00 \
+    --cpus_per_task=1 \
+    --gres=gpu:1 \
+    --mem=16G
+```
+
+This command schedules the `your-application` job to run for 1 hour, using 1 CPU, 1 GPU, and 16GB of memory.
+
+### Running a Job
+
+To run a scheduled job, use the `milex-run` command:
+
+```bash
+milex-run your-application --machine=remote_machine
+```
+
+This command runs the `your-application` job on the `remote_machine` specified in your configuration. You can also schedule and run at the same time 
+using the `--run-now` command
+```bash
+milex-schedule your-application --run-now
+```
+
+## Examples
+
+### Scheduling a Simple Job
+
+1. Register your application in the `pyproject.toml` file:
+
+```toml
+[project.scripts]
+my-script = "my_package.module:main"
+my-script-cli = "my_package.module:cli"
+```
+
+2. Schedule the job:
+
+```bash
+milex-schedule my-script --time=12-00:00 --cpus_per_task=1
+```
+
+3. Run the job:
+
+```bash
+milex-run my-script
+```
+
+### Scheduling a Job with Dependencies
+
+```bash
+milex-schedule my-script \
+    --dependencies job1 job2 \
+    --time=1-00:00 \
+    --cpus_per_task=1 \
+    --gres=gpu:1
+```
+
+This command schedules `my-script` to run for 1 day, using 1 CPU and 1 GPU, and sets dependencies on `job1` and `job2`.
 
 
 # Scheduling a script
-
-We outline how to create and integrate a custom application with `milex-schedule`, a tool designed to schedule and run jobs in a SLURM cluster environment. 
-You might wonder why we built this. In truth, the main reason was frustration. Writing an endless number of shell scripts to submit jobs is tedious.
-
-As such, `milex-schedule` offer the following abstractions:
-1. Completely automates the creation of the JSON configuration file which...
-2. Automates the creation of a SLURM shell script.
-3. As a bonus, you can also run `milex-schedule` from your laptop and it will send the job to the cluster through SSH
-
-Your python scripts needs to be modified very minimally in order to be scheduled. And, since all your user information are abstracted away 
-by [`milex-configuration`](#Milex-Configuration), the call to `milex-schedule` is completely reproducible from another user perspective (assuming they use SLURM). 
-
-We also have `milex-run job_name` which minimally takes only the name of your job and will run the latest JSON configuration file created (or one of your choosing).
-
 To ensure smooth integration, your application must adhere to a specific structure and be properly registered within your Python package.
 
 ## Application Structure
@@ -96,7 +166,7 @@ to register the `cli` function.
 
 ## Scheduling your application
 
-Once the application is registered, you can schedule it using the following (command line) template
+Once the application is registered, you can schedule it using, for example, the following template
 
 
 ```shell
