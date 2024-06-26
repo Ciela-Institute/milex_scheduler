@@ -84,22 +84,19 @@ def main():
 
     with open(CONFIG_FILE_PATH, 'r') as file:
         config = json.load(file)
-
+    
     # Check if local entry is present and has a valid path
     if "local" not in config:
-        raise ValueError("Invalid configuration. Please make sure the 'local' machine is present and has a valid 'path'.")
-    if "path" not in config["local"] or not os.path.exists(config["local"]["path"]):
-        raise ValueError("Invalid configuration. Please make sure the 'local' machine is present and has a valid 'path'.")
+        raise ValueError("Invalid configuration. Please make sure the 'local' machine is present in the configuration file.")
+    if "path" not in config["local"]:
+        raise ValueError("Invalid configuration. Please make sure the 'local' has a path specified.")
 
     # Handle remote machines setup
     for machine_name, machine_config in config.items():
+        print(f"Setting up {machine_name} machine...")
+        
         if machine_name == "local":
-            continue
-
-        if machine_config.get("hostname", None) is None: # local machine
-            if machine_config.get("path", None) is not None :
-                setup_directories(machine_config["path"], ['data', 'models', 'slurm', 'jobs', 'results'])
-                # update_bashrc(machine_config["path"])
+            setup_directories(machine_config["path"], ['data', 'models', 'slurm', 'jobs', 'results'])
 
         else: # remote machine
             if not check_host(machine_config["hostname"]):

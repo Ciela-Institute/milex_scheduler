@@ -174,3 +174,4 @@ def test_missing_env_command(args, mock_load_config):
 
     with pytest.raises(AttributeError, match="env_command"):
         machine_config(args)
+
