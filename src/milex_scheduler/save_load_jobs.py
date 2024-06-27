@@ -53,7 +53,7 @@ def save_job(
 
 
 def save_task(
-        task_detais: dict, 
+        task_details: dict, 
         job_name: str, 
         task_name: str,
         append: bool = False,

@@ -4,11 +4,11 @@ import shlex
 import json
 import sys
 from ..job_runner import run_job
-from ..save_load_jobs import save_job, save_task
+from ..save_load_jobs import save_task
 from ..utils import machine_config
 
 
-def parse_job_args(job_name, unknown_args) -> dict:
+def parse_task_args(job_name, unknown_args) -> dict:
     # Each argument needs to be properly quoted to handle spaces and special characters
     prepared_args = [shlex.quote(arg) for arg in unknown_args]
 
@@ -44,7 +44,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Schedule a task to run on a SLURM cluster, alone or as part as a set of tasks (job)')
     
     parser.add_argument('task_name', help='Name of the task (a single SLURM script)')
-    parser.add_argument('--job', required=False, help='Name of the job (set of tasks). If not provided, the task name is used as the job name.') 
+    parser.add_argument('--job', default=None, help='Name of the job (set of tasks). If not provided, the task name is used as the job name.') 
     parser.add_argument('--run-now', action='store_true', help='Run the job immediately')
     parser.add_argument('--append', action='store_true', help='Append the task to the job file')
 
@@ -74,24 +74,24 @@ def parse_args():
     # fmt: on
     
     args, unknown_args = parser.parse_known_args()
-    job_args = parse_job_args(args.name, unknown_args)
-    return args, job_args
+    task_args = parse_task_args(args.name, unknown_args)
+    return args, task_args
 
 
 def cli():
     import sys, json
-    args, job_args = parse_args()
-    if job_args is None:
+    args, task_args = parse_args()
+    if task_args is None:
         sys.exit(1)
     print(json.dumps(vars(args), indent=4))
     sys.exit(0)
 
 
 def main():
-    args, job_args = parse_args()
+    args, task_args = parse_args()
     job_name = args.job if args.job is not None else args.task_name
     task_details = {
-            "args": job_args,
+            "args": task_args,
             "name": args.name,
             "script": args.name, # Name of the script, in schedule we assume it's the same as task name
             "dependencies": args.dependencies,

@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from milex_scheduler.apps.milex_schedule import parse_job_args, parse_args, main
+from milex_scheduler.apps.milex_schedule import parse_task_args, parse_args, main
 from argparse import Namespace
 import os
 import json
@@ -34,6 +34,8 @@ def mock_parse_known_args():
             Namespace(
                 name="job_name",
                 task_name="task_name",
+                job=None,
+                append=False,
                 run_now=False,
                 dependencies=None,
                 pre_commands=None,
@@ -80,22 +82,22 @@ Tests
 """
 
 
-def test_parse_job_args_success(mock_run):
+def test_parse_task_args_success(mock_run):
     """
     Test that the function returns the job arguments correctly as a dictionary,
     simulating the behavior of a CLI application outputting JSON.
     """
-    job_args = parse_job_args(
+    job_args = parse_task_args(
         "job_name", ["--custom_arg1", "value1", "--custom_arg2", "value2"]
     )
     expected_dict = {"custom_arg1": "value1", "custom_arg2": "value2"}
     assert job_args == expected_dict
 
 
-def test_parse_job_args_error(mock_run):
+def test_parse_task_args_error(mock_run):
     mock_run.return_value = MagicMock(returncode=1, stderr="error")
     with pytest.raises(ValueError):
-        job_args = parse_job_args(
+        job_args = parse_task_args(
             "job_name", ["--custom_arg1", "value1", "--custom_arg2", "value2"]
         )
 
@@ -131,6 +133,8 @@ def test_main(
         Namespace(
             name="job_name",
             task_name="task_name",
+            job=None,
+            append=False,
             run_now=True,
             dependencies=[],
             pre_commands=[],
