@@ -6,6 +6,7 @@ TODO: Clarify the docs. Should have usage first with simple examples
 TODO: Mention the append features, distinction between task and job (useful for chaining them)
 TODO: mention the key functions that can be used in a package.
 TODO: Have a function that runs a job, without necessarily loading it. Might be useful for sampling package?
+TODO: A way to handle the machine that does not enter the script in the spirit of reproducibility
 
 ## Key Features
 
