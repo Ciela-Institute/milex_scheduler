@@ -2,6 +2,11 @@
 
 Milex Scheduler is a package that simplifies the process of scheduling and running jobs on a SLURM cluster. It provides an abstraction layer over the SLURM shell scripts, allowing you to schedule jobs with a single command line interface (CLI) tool.
 
+TODO: Clarify the docs. Should have usage first with simple examples
+TODO: Mention the append features, distinction between task and job (useful for chaining them)
+TODO: mention the key functions that can be used in a package.
+TODO: Have a function that runs a job, without necessarily loading it. Might be useful for sampling package?
+
 ## Key Features
 
 - **Simplified Job Scheduling**: Schedule jobs on a SLURM cluster with a single command, without the need to write complex SLURM scripts.
@@ -14,7 +19,7 @@ Milex Scheduler is a package that simplifies the process of scheduling and runni
 1. Install the Milex-scheduler package
 
 ```bash
-git clonegit@github.com:Ciela-Institute/milex_scheduler.git
+git clone git@github.com:Ciela-Institute/milex_scheduler.git
 cd milex_scheduler
 pip install -e .
 ```
