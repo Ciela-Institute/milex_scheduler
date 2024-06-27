@@ -18,13 +18,13 @@ def mock_run():
 
 
 @pytest.fixture
-def mock_run_jobs():
+def mock_run_job():
     """
-    We avoid the full integration of run_jobs, which is integrated in another test (see test_job_runner.py)
-    Here, we test up until the point where run_jobs is called.
+    We avoid the full integration of run_job, which is integrated in another test (see test_job_runner.py)
+    Here, we test up until the point where run_job is called.
     """
-    with patch("milex_scheduler.apps.milex_schedule.run_jobs") as mock_run_jobs:
-        yield mock_run_jobs
+    with patch("milex_scheduler.apps.milex_schedule.run_job") as mock_run_job:
+        yield mock_run_job
 
 
 @pytest.fixture
@@ -114,7 +114,7 @@ def test_cli(mock_parse_known_args, mock_run):
 
 
 def test_main(
-    mock_run_jobs,
+    mock_run_job,
     mock_parse_known_args,
     mock_run,
     mock_load_config

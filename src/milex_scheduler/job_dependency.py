@@ -6,6 +6,21 @@ from .utils import load_config
 __all__ = ["dependency_graph", "update_slurm_script_with_dependencies"]
 
 def dependency_graph(jobs):
+    """
+    Build a dependency graph from a dictionary of jobs. 
+    
+    Exemple:
+        jobs = {
+            "JobA": {},
+            "JobB": {"dependencies": ["JobA"]},
+            "JobC": {"dependencies": ["JobA", "JobB"]},
+        }
+        dependency_graph(jobs) = {
+                "JobA": ["JobB", "JobC"],
+                "JobB": ["JobC"],
+                "JobC": []
+            }
+    """
     dependency_graph = defaultdict(list)
     names = set()
     for task_name, job_details in jobs.items():

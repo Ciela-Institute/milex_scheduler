@@ -1,7 +1,7 @@
 import os
 import pytest
 from unittest.mock import patch, MagicMock
-from milex_scheduler import save_jobs, run_jobs
+from milex_scheduler import save_job, run_job
 from glob import glob
 
 # Mock Data for Job Configurations
@@ -150,8 +150,8 @@ def test_integration_schedule_jobs(
         mock_load_config
         ):
     # Save the mock jobs to a JSON file
-    save_jobs(mock_jobs, mock_job_name)
-    run_jobs(mock_job_name, machine_config=mock_machine_config)
+    save_job(mock_jobs, mock_job_name)
+    run_job(mock_job_name, machine_config=mock_machine_config)
 
     # Now check the content of the SLURM scripts  generated
     user_config = mock_load_config()
@@ -202,7 +202,7 @@ def test_integration_schedule_jobs_with_error(
         ):
     with pytest.raises(ValueError):
         # Save the mock jobs to a JSON file
-        save_jobs(mock_jobs_error, mock_job_name)
-        run_jobs(mock_job_name, machine_config=mock_machine_config)
+        save_job(mock_jobs_error, mock_job_name)
+        run_job(mock_job_name, machine_config=mock_machine_config)
         # Missing script name should raise an error
 

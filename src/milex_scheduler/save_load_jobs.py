@@ -1,5 +1,5 @@
 """
-Small utility to save/load jobs to/from a JSON file in the jobs directory
+Utility functions to save/load jobs to/from a JSON file in the jobs directory
 """
 from .utils import load_config
 from .definitions import DATE_FORMAT
@@ -11,30 +11,84 @@ import paramiko
 import json
 import os
 
-__all__ = ["save_jobs", "load_jobs", "transfer_script_to_remote", "get_nearest_job_file"]
+__all__ = ["save_task", "save_job", "load_job", "transfer_script_to_remote", "nearest_job_file"]
 
 
-def save_jobs(jobs: dict, job_name: str) -> None:
+def save_job(
+        job_details: dict, 
+        job_name: str, 
+        append: bool = False,
+        ) -> None:
     """
     Save job configurations to a JSON file.
 
     Args:
-        jobs (dict): A dict of job configurations.
+        job_details (dict): A dict of tasks configurations.
         job_name (str): The name of the job to save.
-        overwrite (bool, optional): Whether to overwrite an existing job configuration with the same name. 
-            Defaults to False.
-
-    Raises:
-        ValueError: If the job configuration already exists and overwrite is set to False.
-
+        append (bool): Flag indicating whether to append the job configuration to an existing file. Defaults to False.
     """
     user_config = load_config()
-    now = datetime.now().strftime(DATE_FORMAT)
-    file_path = os.path.join(user_config['local']['path'], 'jobs', f'{job_name}_{now}.json')
-
+    if append:
+        try: # Save the job in existing job file
+            file_path, date = nearest_job_file(job_name, desired_date)
+            # Load the job file
+            with open(file_path, 'r') as file:
+                job = json.load(file)
+            # Append the new job to the existing job file and save it
+            job.update(job_details)
+        except FileNotFoundError: # Create a new job file
+            now = datetime.now().strftime(DATE_FORMAT)
+            file_path = os.path.join(user_config['local']['path'], 'jobs', f'{job_name}_{now}.json')
+            job = job_details
+    else: # Create a new job file
+        now = datetime.now().strftime(DATE_FORMAT)
+        file_path = os.path.join(user_config['local']['path'], 'jobs', f'{job_name}_{now}.json')
+        job = job_details
+    
+    # Save the job to a JSON file
     with open(file_path, 'w') as file:
-        json.dump(jobs, file, indent=4)
+        json.dump(job, file, indent=4)
 
+    print(f"Saved job {job_name} to {file_path}")
+
+
+def save_task(
+        task_detais: dict, 
+        job_name: str, 
+        task_name: str,
+        append: bool = False,
+        ) -> None:
+    """
+    Save job configurations to a JSON file.
+
+    Args:
+        task_details (dict): A dict of task configurations.
+        job_name (str): The name of the job to save.
+        task_name (str): The name of the task.
+        append (bool): Flag indicating whether to append the task configuration to an existing file. Defaults to False.
+    """
+    user_config = load_config()
+    if append:
+        try: # Save the task in existing job file
+            file_path, date = nearest_job_file(job_name, desired_date)
+            # Load the job file
+            with open(file_path, 'r') as file:
+                job = json.load(file)
+            # Append the new job to the existing job file and save it
+            job[task_name] = job_details
+        except FileNotFoundError: # Create a new job file
+            date = datetime.now().strftime(DATE_FORMAT)
+            file_path = os.path.join(user_config['local']['path'], 'jobs', f'{job_name}_{date}.json')
+            job = {task_name: task_details}
+    else: # Create a new job file
+        date = datetime.now().strftime(DATE_FORMAT)
+        file_path = os.path.join(user_config['local']['path'], 'jobs', f'{job_name}_{date}.json')
+        job = {task_name: task_details}
+
+    # Save the job to a JSON file
+    with open(file_path, 'w') as file:
+        json.dump(job, file, indent=4)
+        
     print(f"Saved job {job_name} to {file_path}")
 
 
@@ -67,16 +121,16 @@ def transfer_script_to_remote(script_name, machine_name: Optional[str] = None, m
     ssh.close()
 
 
-def order_jobs(jobs, sorted_names):
-    jobs_list = []
+def order_tasks(tasks, sorted_names):
+    tasks_list = []
     for name in sorted_names:
-        job_details = jobs[name]
-        job_details['name'] = name  # Add the name to the job details
-        jobs_list.append(job_details)
-    return jobs_list
+        task_details = tasks[name]
+        task_details['name'] = name  # Make sure name of the task is in details
+        tasks_list.append(task_details)
+    return tasks_list
 
 
-def load_jobs(job_name: str, desired_date: Optional[datetime] = None) -> tuple[list, dict, datetime]:
+def load_job(job_name: str, desired_date: Optional[datetime] = None) -> tuple[list, dict, datetime]:
     """
     Read the jobs JSON file and extract the dependency graph.
 
@@ -95,7 +149,7 @@ def load_jobs(job_name: str, desired_date: Optional[datetime] = None) -> tuple[l
 
     # Load user configuration and job file path
     user_config = load_config()
-    job_file, date = get_nearest_job_file(job_name, desired_date)
+    job_file, date = nearest_job_file(job_name, desired_date)
     file_path = os.path.join(user_config['local']['path'], 'jobs', job_file)
 
     with open(file_path, 'r') as file:
@@ -108,12 +162,12 @@ def load_jobs(job_name: str, desired_date: Optional[datetime] = None) -> tuple[l
     
     # Depth-first search topological sorting of a graph (raises error if a cycle is detected)
     sorted_job_names = tuple(TopologicalSorter(dependencies).static_order())[::-1]
-    jobs = order_jobs(jobs, sorted_job_names)
+    jobs = order_tasks(jobs, sorted_job_names)
     
     return jobs, dependencies, date
 
 
-def get_nearest_job_file(job_name: str, desired_date: Optional[datetime] = None) -> tuple[str, datetime]:
+def nearest_job_file(job_name: str, desired_date: Optional[datetime] = None) -> tuple[str, datetime]:
     """
     Get the job closest in time to configuration from the jobs directory.
     """

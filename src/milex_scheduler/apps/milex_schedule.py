@@ -3,7 +3,8 @@ import subprocess
 import shlex
 import json
 import sys
-from milex.scheduler import save_jobs, run_jobs
+from ..job_runner import run_job
+from ..save_load_jobs import save_job, save_task
 from ..utils import machine_config
 
 
@@ -40,16 +41,17 @@ def parse_job_args(job_name, unknown_args) -> dict:
 
 def parse_args():
     # fmt: off
-    parser = argparse.ArgumentParser(description='Schedule a job to run on a SLURM cluster')
+    parser = argparse.ArgumentParser(description='Schedule a task to run on a SLURM cluster, alone or as part as a set of tasks (job)')
     
-    parser.add_argument('name', help='Name of the job')
-    # parser.add_argument('--task_name', required=False, help='Name of the task')
+    parser.add_argument('task_name', help='Name of the task (a single SLURM script)')
+    parser.add_argument('--job', required=False, help='Name of the job (set of tasks). If not provided, the task name is used as the job name.') 
     parser.add_argument('--run-now', action='store_true', help='Run the job immediately')
+    parser.add_argument('--append', action='store_true', help='Append the task to the job file')
 
     # Optional argument for machine configuration
     parser.add_argument('--machine', required=False, help='Machine name to run the jobs (e.g., local, remote_1)')
     
-    parser.add_argument('--dependencies', required=False, nargs='+', help='List of job names that this job depends on to run')
+    parser.add_argument('--dependencies', required=False, nargs='+', help='List of task names that this task depends on to run')
     parser.add_argument('--pre-commands', required=False, nargs="+", help='Command to run before the main job')
     
     slurm = parser.add_argument_group('slurm', 'SLURM configuration options')
@@ -59,7 +61,6 @@ def parse_args():
     slurm.add_argument('--gres', required=False, help='Generic resource specification (e.g., gpu:1)')
     slurm.add_argument('--mem', required=False, help='Memory per node')
     slurm.add_argument('--time', required=True, help='Maximum time for the job to run (e.g., 01:00:00)')
-
 
     # Optional arguments for custom machine configuration
     machine_config = parser.add_argument_group('machine_config', 'Custom machine configuration options')
@@ -73,8 +74,6 @@ def parse_args():
     # fmt: on
     
     args, unknown_args = parser.parse_known_args()
-
-    
     job_args = parse_job_args(args.name, unknown_args)
     return args, job_args
 
@@ -90,13 +89,9 @@ def cli():
 
 def main():
     args, job_args = parse_args()
-    # if args.task_name is None:
-        # args.task_name = args.name
-    # Construct the JSON file
-    job_config = {
-        args.name: {
+    job_name = args.job if args.job is not None else args.task_name
+    task_details = {
             "args": job_args,
-            # "name": args.task_name,
             "name": args.name,
             "script": args.name, # Name of the script, in schedule we assume it's the same as task name
             "dependencies": args.dependencies,
@@ -108,14 +103,17 @@ def main():
                 "gres": args.gres,
                 "mem": args.mem,
                 "time": args.time,
-            },
         }
     }
     
-    save_jobs(job_config, args.name)
-    
+    save_task(
+            task_details=task_details,
+            job_name=job_name,
+            task_name=args.task_name,
+            append=args.append
+            )
+
     if args.run_now:
         config = machine_config(args)
-        print(config)
-        run_jobs(args.name, machine_config=config)
+        run_job(args.name, machine_config=config)
 

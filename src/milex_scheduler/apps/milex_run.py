@@ -1,6 +1,6 @@
 import argparse
 from ..utils import machine_config
-from ..job_runner import run_jobs 
+from ..job_runner import run_job
 
 def parse_args():
     """
@@ -11,9 +11,10 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(description='Run scripts on a SLURM cluster.')
     parser.add_argument('name', help='Name of the job')
-    parser.add_argument('--task_name', required=False, help='Name of the task to be run')
-
-    #TODO add date
+    # parser.add_argument('date', required=False, help='If provided, will look for job closest to this date. Otherwise, latest job is ran.' 
+                        # 'Provide in the format [Y]YYYY-[M]MM-[D]DD-[H]HH-[m]mm-[s]ss.' 
+                        # 'E.g., Y2021 will yield the latest job of 2021. M09 will yield the latest job of last September.' 
+                        # 'D15 will yield the latest job of the 15th of the month. Y2021-M09 will yield the latest job of September 2021. etc.')
     
     # Optional argument for machine configuration
     parser.add_argument('--machine', required=False, help='Machine name to run the jobs (e.g., local, remote_1)')
@@ -40,5 +41,5 @@ def cli():
 def main():
     args = parse_args()
     config = machine_config(args)
-    run_jobs(args.name, machine_config=config) # TODO: add date
+    run_job(args.name, machine_config=config)
 

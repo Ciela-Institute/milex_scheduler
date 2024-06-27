@@ -3,13 +3,13 @@ from datetime import datetime
 from .job_to_slurm import create_slurm_script
 from .job_dependency import update_slurm_script_with_dependencies
 from .run_slurm import run_script_remotely, run_script_locally
-from .save_load_jobs import load_jobs, transfer_script_to_remote
+from .save_load_jobs import load_job, transfer_script_to_remote
 from .utils import load_config
 
-__all__ = ["run_jobs"]
+__all__ = ["run_job"]
 
 
-def run_jobs(job_name: str, machine_config: Optional[dict] = None, date: Optional[datetime] = None):
+def run_job(job_name: str, machine_config: Optional[dict] = None, date: Optional[datetime] = None):
     """
     Run a job with SLURM either locally or on a remote machine. This is the main function of the scheduler module.
     It assumes the job configuration is stored in a JSON file. The logic to save jobs to a JSON file is implemented in the "save_load_jobs" module.
@@ -18,9 +18,6 @@ def run_jobs(job_name: str, machine_config: Optional[dict] = None, date: Optiona
     - job_name (str): The name of the job to be scheduled.
     - machine (Optional[str]): The name of the machine where the job should be executed. If not provided, the job will be executed locally.
     - machine_config (Optional[dict]): The configuration details for the remote machine. If not provided, the default configuration will be used.
-
-    Returns:
-    - job_name_to_id (dict): A dictionary mapping each job name to its corresponding job ID.
 
     Raises:
     - EnvironmentError: If no configuration is found for the specified machine.
@@ -31,7 +28,7 @@ def run_jobs(job_name: str, machine_config: Optional[dict] = None, date: Optiona
     machine = machine_config.get('hostname', 'local') # if no hostname is provided, the job will be executed locally
     
     # Create a SLURM script for each job
-    jobs, dependencies, date = load_jobs(job_name) # List of jobs sorted in tolopological order
+    jobs, dependencies, date = load_job(job_name) # List of jobs sorted in tolopological order
     script_names = {}
     for job in jobs:
         if job.get("script", None) is None:
