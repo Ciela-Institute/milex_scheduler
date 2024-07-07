@@ -4,10 +4,8 @@
 running jobs on a SLURM cluster. It provides an abstraction layer over the SLURM
 shell scripts focused on the following key features:
 
-- Schedule multiple jobs at once
-  - With dependencies (only by specifying job names in the dependency)
-  - Or by appending to the same script (e.g. nesting jobs with similar
-    configurations in a **for** loop)
+- Schedule multiple jobs at once while handling dependencies by specifying job
+  names
 - Submitting jobs on different machines across SSH connections
 - Reproducibility of job configurations
   - Each job or bundle of jobs is saved as a JSON file with a unique timestamps
