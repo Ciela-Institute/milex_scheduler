@@ -5,7 +5,7 @@ import paramiko
 from typing import Optional
 from .utils import load_config
 
-__all__ = ["get_job_id_from_sbatch_output", "run_script_remotely", "run_script_locally"]
+__all__ = ["get_job_id_from_sbatch_output", "run_slurm_remotely", "run_slurm_locally"]
 
 
 def get_job_id_from_sbatch_output(output):
@@ -17,21 +17,20 @@ def get_job_id_from_sbatch_output(output):
         raise ValueError(f"Unable to capture job ID from sbatch output {output}")
 
 
-def run_script_remotely(shell_script_name, machine: Optional[str] = None, machine_config: Optional[dict] = None):
+def run_slurm_remotely(slurm_name, machine: Optional[str] = None, machine_config: Optional[dict] = None):
     """
     Runs a SLURM script on a remote machine via SSH and captures the job ID.
 
-    Parameters:
-    script_path (str): The path to the SLURM script.
-    hostname (str): The hostname of the remote machine.
-    username (str): The username for SSH login.
-    key_path (str): The path to the SSH private key.
+    Args:
+        slurm_name (str): The name of the SLURM script to run.
+        machine (Optional[str]): The name of the machine to run the script on.
+        machine_config (Optional[dict]): The configuration details for the remote machine.
 
     Returns:
-    str: The job ID assigned by SLURM.
+        str: The job ID assigned by SLURM.
 
     Raises:
-    paramiko.SSHException: If there is an error with the SSH connection.
+        paramiko.SSHException: If there is an error with the SSH connection.
     """
     if machine is not None:
         machine_config = load_config().get(machine)
@@ -46,7 +45,7 @@ def run_script_remotely(shell_script_name, machine: Optional[str] = None, machin
         raise ValueError("Either machine or machine_config must be specified")
     
     hostname, username, key_path = machine_config['hostname'], machine_config['username'], machine_config['key_path']
-    script_path = os.path.join(machine_config['path'], "slurm", shell_script_name)
+    script_path = os.path.join(machine_config['path'], "slurm", slurm_name)
     
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -57,10 +56,10 @@ def run_script_remotely(shell_script_name, machine: Optional[str] = None, machin
     return get_job_id_from_sbatch_output(output)
 
 
-def run_script_locally(shell_script_name):
+def run_slurm_locally(slurm_name):
     """Runs a SLURM script locally and captures the job ID."""
     user_config = load_config()
-    script_path = os.path.join(user_config['local']['path'], "slurm", shell_script_name)
+    script_path = os.path.join(user_config['local']['path'], "slurm", slurm_name)
     
     result = subprocess.run(['sbatch', script_path], capture_output=True, text=True)
     return get_job_id_from_sbatch_output(result.stdout)

@@ -1,6 +1,6 @@
 import argparse
 from ..utils import machine_config
-from ..job_runner import run_job
+from ..job_runner import run_jobs
 
 def parse_args():
     """
@@ -41,5 +41,5 @@ def cli():
 def main():
     args = parse_args()
     config = machine_config(args)
-    run_job(args.name, machine_config=config)
+    run_jobs(args.name, machine_config=config)
 

@@ -28,14 +28,13 @@ def setup_directories(base_path, directories, ssh_client=None):
             else:
                 print(f"Directory already exists: {path}")
 
-# Updated the shell generator to include the MILEX environment variable
-# def update_bashrc(base_path, ssh_client=None):
-    # """Append MILEX environment variable to .bashrc for persistence, locally or remotely."""
-    # bash_command = f'echo "export MILEX=\\"{base_path}\\"" >> ~/.bashrc'
-    # if ssh_client:
-        # ssh_client.exec_command(bash_command)
-    # else:
-        # os.system(bash_command)
+def update_bashrc(base_path, ssh_client=None):
+    """Append MILEX environment variable to .bashrc for persistence, locally or remotely."""
+    bash_command = f'echo "export MILEX=\\"{base_path}\\"" >> ~/.bashrc'
+    if ssh_client:
+        ssh_client.exec_command(bash_command)
+    else:
+        os.system(bash_command)
 
 def check_host(hostname):
     """Check if the SSH hostname is resolvable."""
@@ -97,6 +96,7 @@ def main():
         
         if machine_name == "local":
             setup_directories(machine_config["path"], ['data', 'models', 'slurm', 'jobs', 'results'])
+            update_bashrc(machine_config["path"])
 
         else: # remote machine
             if not check_host(machine_config["hostname"]):

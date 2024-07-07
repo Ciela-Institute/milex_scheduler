@@ -3,7 +3,7 @@ from typing import Union
 from collections import defaultdict
 from .utils import load_config
 
-__all__ = ["dependency_graph", "update_slurm_script_with_dependencies"]
+__all__ = ["dependency_graph", "update_slurm_with_dependencies"]
 
 def dependency_graph(jobs):
     """
@@ -16,29 +16,29 @@ def dependency_graph(jobs):
             "JobC": {"dependencies": ["JobA", "JobB"]},
         }
         dependency_graph(jobs) = {
-                "JobA": ["JobB", "JobC"],
+                "JobA": ["JobB", JobC"],
                 "JobB": ["JobC"],
                 "JobC": []
             }
     """
     dependency_graph = defaultdict(list)
     names = set()
-    for task_name, job_details in jobs.items():
-        if task_name in names:
-            raise ValueError("Duplicate tasks: {}".format(task_name))
-        names.add(task_name)
-        dependency_graph[task_name] = []
-        if job_details.get('dependencies') is not None: # avoid case where dependencies is None
-            for dep in job_details.get('dependencies', []):
-                dependency_graph[dep].append(task_name)
+    for job_name, job in jobs.items():
+        if job_name in names:
+            raise ValueError("Duplicate job: {}".format(job_name))
+        names.add(job_name)
+        dependency_graph[job_name] = []
+        if job.get('dependencies') is not None: # avoid case where dependencies is None
+            for dep in job.get('dependencies', []):
+                dependency_graph[dep].append(job_name)
     return dependency_graph
 
 
-def update_slurm_script_with_dependencies(script_name, dependency_job_ids: Union[list, tuple, int]):
+def update_slurm_with_dependencies(slurm_name, dependency_job_ids: Union[list, tuple, int]):
     if not isinstance(dependency_job_ids, (list, tuple)):
         dependency_job_ids = [dependency_job_ids]
     user_config = load_config()
-    file_path = os.path.join(user_config['local']['path'], 'slurm', script_name)
+    file_path = os.path.join(user_config['local']['path'], 'slurm', slurm_name)
     
     with open(file_path, 'r') as file:
         lines = file.readlines()

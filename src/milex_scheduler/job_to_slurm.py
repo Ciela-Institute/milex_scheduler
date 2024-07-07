@@ -1,25 +1,24 @@
 import os
+from io import TextIOWrapper
 from datetime import datetime
-from .utils import make_script_name, load_config
+from .utils import name_slurm_script, load_config
 
 
 __all__ = ["create_slurm_script"]
 
 
-def create_slurm_script(job_name: str, date: datetime, job_details: dict, machine_config: dict) -> str:
+def create_slurm_script(job: dict, date: datetime, machine_config: dict) -> str:
     """Creates a SLURM script and saves it locally"""
     user_settings = load_config()
     path = os.path.join(user_settings['local']['path'], "slurm")
-    script_name = make_script_name(job_name, date, job_details)
-    # Save the script locally
-    path = os.path.join(path, script_name)
-    with open(path, 'w') as f:
-        write_slurm_script_content(f, job_details, machine_config)
-    print(f"Saved SLURM script for task {job_details['name']} saved to {path}")
-    return script_name
+    slurm_name = name_slurm_script(job, date)
+    with open(os.path.join(path, slurm_name), 'w') as f:
+        write_slurm_content(f, job, machine_config)
+    print(f"Saved SLURM script for job {job['name']} saved to {path}")
+    return slurm_name
 
 
-def write_slurm_script_content(file, job_details: dict, machine_config: dict) -> None:
+def write_slurm_content(file: TextIOWrapper, job: dict, machine_config: dict) -> None:
     """
     Writes the content of the SLURM script with formatted arguments, handling list arguments differently based on their type.
     """
@@ -31,10 +30,10 @@ def write_slurm_script_content(file, job_details: dict, machine_config: dict) ->
         file.write(f"#SBATCH --account={slurm_account}\n")
     output_dir = os.path.join(machine_config['path'], "slurm")
     file.write(f"#SBATCH --output={os.path.join(output_dir, '%x-%j.out')}\n")
-    file.write(f"#SBATCH --job-name={job_details['name']}\n")
+    file.write(f"#SBATCH --job-name={job['name']}\n")
 
     # SLURM directives
-    for key, value in job_details['slurm'].items():
+    for key, value in job['slurm'].items():
         if value is not None:
             file.write(f"#SBATCH --{key.replace('_', '-')}={value}\n")
     
@@ -46,16 +45,16 @@ def write_slurm_script_content(file, job_details: dict, machine_config: dict) ->
         file.write(f"{env_command}\n")
 
     # Pre-commands
-    for cmd in job_details.get("pre_commands", []):
+    for cmd in job.get("pre_commands", []):
         file.write(f"{cmd}\n")
 
     # Main command and arguments
-    file.write(f"{job_details['script']} \\\n")
-    args_keys = list(job_details['args'].keys())
+    file.write(f"{job['script']} \\\n")
+    args_keys = list(job['args'].keys())
     if args_keys:
         last_arg = args_keys[-1]  # Get the last argument key in case there are arguments
 
-    for k, v in job_details['args'].items():
+    for k, v in job['args'].items():
         if v is None:
             continue
         if isinstance(v, bool):

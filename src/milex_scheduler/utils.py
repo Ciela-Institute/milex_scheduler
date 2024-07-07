@@ -8,24 +8,22 @@ import json
 __all__ = ["load_config", "machine_config"]
 
 
-def make_script_name(job_name, date: datetime, job_details):
-    task_name = job_details["name"]
-    if task_name == job_name:
-        return f"{job_name}_{date.strftime(DATE_FORMAT)}.sh"
-    else:
-        return f"{job_name}_{task_name}_{date.strftime(DATE_FORMAT)}.sh"
+def name_slurm_script(job: dict, date: datetime):
+    name = job["name"]
+    date = date.strftime(DATE_FORMAT)
+    return f"{name}_{date}.sh"
 
 
-def update_job_info_with_id(job_name, date, task_name, job_id):
+def update_job_info_with_id(bundle_name, date, job_name, job_id):
     """Updates the job JSON file with the job ID"""
     path = os.path.join(
         load_config()["local"]["path"],
         "jobs",
-        f"{job_name}_{date.strftime(DATE_FORMAT)}.json",
+        f"{bundle_name}_{date.strftime(DATE_FORMAT)}.json",
     )
     with open(path, "r") as f:
         jobs = json.load(f)
-    jobs[task_name]["id"] = job_id
+    jobs[job_name]["id"] = job_id
     with open(path, "w") as f:
         json.dump(jobs, f, indent=4)
 
@@ -44,7 +42,6 @@ def load_config() -> dict:
         raise EnvironmentError(f"Configuration file not found at {CONFIG_FILE_PATH}. Please use `milex-configurations` to create the configurations for milex.")
     with open(CONFIG_FILE_PATH, 'r') as file:
         return json.load(file)
-
 
 
 def machine_config(args: Namespace):

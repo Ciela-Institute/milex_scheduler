@@ -1,6 +1,6 @@
 from unittest.mock import patch
 from milex_scheduler.job_dependency import (
-    update_slurm_script_with_dependencies,
+    update_slurm_with_dependencies,
     dependency_graph,
 )
 import os
@@ -40,7 +40,7 @@ def test_dependency_graph_empty_job_list():
 
 
 """
-Test update_slurm_script_with_dependencies
+Test update_slurm_with_dependencies
 """
 
 
@@ -53,7 +53,7 @@ def create_temp_slurm_script(tmp_path, script_name, content):
     return script_path
 
 
-def test_update_slurm_script_with_existing_dependency(tmp_path):
+def test_update_slurm_with_existing_dependency(tmp_path):
     original_script = "#!/bin/bash\n#SBATCH --dependency=afterok:111\n"
     expected_script = "#!/bin/bash\n#SBATCH --dependency=afterok:111:123:456\n"
     script_name = "dummy_job.sh"
@@ -62,7 +62,7 @@ def test_update_slurm_script_with_existing_dependency(tmp_path):
     # Mock load_config to return the path of the temporary directory
     mock_config = {"local": {"path": str(tmp_path)}}
     with patch("milex_scheduler.job_dependency.load_config", return_value=mock_config):
-        update_slurm_script_with_dependencies(script_name, ["123", "456"])
+        update_slurm_with_dependencies(script_name, ["123", "456"])
         with open(script_path, "r") as f:
             content = f.read()
         assert content == expected_script
@@ -82,7 +82,7 @@ def test_update_slurm_script_without_dependency(tmp_path):
     # Mock load_config to return the path of the temporary directory
     mock_config = {"local": {"path": str(tmp_path)}}
     with patch("milex_scheduler.job_dependency.load_config", return_value=mock_config):
-        update_slurm_script_with_dependencies(script_name, ["123", "456"])
+        update_slurm_with_dependencies(script_name, ["123", "456"])
 
         with open(script_path, "r") as f:
             content = f.read()
@@ -96,7 +96,7 @@ def test_update_empty_slurm_script(tmp_path):
     # Mock load_config to return the path of the temporary directory
     mock_config = {"local": {"path": str(tmp_path)}}
     with patch("milex_scheduler.job_dependency.load_config", return_value=mock_config):
-        update_slurm_script_with_dependencies(script_name, ["123", "456"])
+        update_slurm_with_dependencies(script_name, ["123", "456"])
 
         with open(script_path, "r") as f:
             content = f.read()
@@ -111,7 +111,7 @@ def test_update_non_standard_slurm_script(tmp_path):
     # Mock load_config to return the path of the temporary directory
     mock_config = {"local": {"path": str(tmp_path)}}
     with patch("milex_scheduler.job_dependency.load_config", return_value=mock_config):
-        update_slurm_script_with_dependencies(script_name, ["123", "456"])
+        update_slurm_with_dependencies(script_name, ["123", "456"])
 
         with open(script_path, "r") as f:
             content = f.read()

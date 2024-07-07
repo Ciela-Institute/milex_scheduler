@@ -3,24 +3,23 @@ import subprocess
 import shlex
 import json
 import sys
-from ..job_runner import run_job
-from ..save_load_jobs import save_task
+from ..job_runner import run_jobs
+from ..save_load_jobs import save_job
 from ..utils import machine_config
 
 
-def parse_task_args(job_name, unknown_args) -> dict:
+def parse_script_args(script, unknown_args) -> dict:
     # Each argument needs to be properly quoted to handle spaces and special characters
     prepared_args = [shlex.quote(arg) for arg in unknown_args]
 
     # Run the job specific CLI parser to validate the arguments
-    command = [f"{job_name}-cli"] + prepared_args
+    command = [f"{script}-cli"] + prepared_args
     result = subprocess.run(command, capture_output=True, text=True)
     
-    try:
+    try: # Try to run the CLI
         result = subprocess.run(command, capture_output=True, text=True, check=True)
-    
     except subprocess.CalledProcessError as e:
-        # Print more intuitive error message
+        # Capture error and parse it to be more intuitive
         error_message = (
             f"Failed to execute command: {' '.join(command)}\n"
             f"Exit code: {e.returncode}\n"
@@ -28,32 +27,35 @@ def parse_task_args(job_name, unknown_args) -> dict:
             "Please check the above command and error output to diagnose the issue."
         )
         print(error_message)
-        # Optionally, you can log this error message to a log file for further analysis
         sys.exit(1)
 
     try:
+        # Load the arguments provided by the CLI parser
         args_dict = json.loads(result.stdout)
     except:
-        raise ValueError(f"Error parsing the output of the {job_name}-cli command. Please make sure it prints to the command line "
-                         "a valid JSON object (e.g. using 'print(json.dumps(vars(args), indent=4))').")
+        raise ValueError(f"Error parsing the output of the {script}-cli command. "
+                         f"Please make sure {script}-clip prints its arguments to the command line with the structure of "
+                         f"a valid JSON object (e.g. use 'print(json.dumps(vars(args), indent=4))').")
     return args_dict
 
 
 def parse_args():
     # fmt: off
-    parser = argparse.ArgumentParser(description='Schedule a task to run on a SLURM cluster, alone or as part as a set of tasks (job)')
+    parser = argparse.ArgumentParser(description='Schedule a job to run with SLURM, alone or as part of a '
+                                                 'set of a bundle of jobs (using the --append comand)')
     
-    parser.add_argument('task_name', help='Name of the task (a single SLURM script)')
-    parser.add_argument('--job', default=None, help='Name of the job (set of tasks). If not provided, the task name is used as the job name.') 
-    parser.add_argument('--run-now', action='store_true', help='Run the job immediately')
-    parser.add_argument('--append', action='store_true', help='Append the task to the job file')
+    parser.add_argument('script', help='Name of the script to schedule.')
+    parser.add_argument('--bundle', default=None, help='Name of the job bundle (JSON file containing multiple jobs/scripts to be scheduled). '
+                                                       'If not provided, the script name is used as the bundle name.') 
+    parser.add_argument('--append', action='store_true', help='Append the job to an existing bundle. '
+                                                              'If not provided, a new unique bundle is created using current timestamp.')
+    parser.add_argument('--run-now', action='store_true', help='Send/run the job immediately after scheduling it.')
+    parser.add_argument('--dependencies', required=False, nargs='+', help='List of jobs that this job depends on to run.')
+    # TODO add this argument, possibly a list of same shape as depencies or single element, which will modify the type of dependency
+    # parser.add_argument('--dependency_type', default='afterok', choices=[''...], help='Type of dependency to use for SLURM job submission.')
+    parser.add_argument('--pre-commands', required=False, nargs="+", help='List of bash commands to run before the script.')
 
-    # Optional argument for machine configuration
-    parser.add_argument('--machine', required=False, help='Machine name to run the jobs (e.g., local, remote_1)')
-    
-    parser.add_argument('--dependencies', required=False, nargs='+', help='List of task names that this task depends on to run')
-    parser.add_argument('--pre-commands', required=False, nargs="+", help='Command to run before the main job')
-    
+    # SLURM configuration options
     slurm = parser.add_argument_group('slurm', 'SLURM configuration options')
     slurm.add_argument('--array', required=False, help='Array job configuration (e.g., 1-10)')
     slurm.add_argument('--tasks', required=False, type=int, help='Number of tasks to run')
@@ -64,6 +66,7 @@ def parse_args():
 
     # Optional arguments for custom machine configuration
     machine_config = parser.add_argument_group('machine_config', 'Custom machine configuration options')
+    machine_config.add_argument('--machine', required=False, help='Machine name to run the jobs (e.g., local, remote_1)')
     machine_config.add_argument('--hostname', required=False, help='Hostname of the remote machine')
     machine_config.add_argument('--username', required=False, help='Username for SSH login')
     machine_config.add_argument('--key_path', required=False, help='Path to the SSH private key')
@@ -74,26 +77,24 @@ def parse_args():
     # fmt: on
     
     args, unknown_args = parser.parse_known_args()
-    task_args = parse_task_args(args.name, unknown_args)
-    return args, task_args
+    script_args = parse_script_args(args.script, unknown_args)
+    return args, script_args
 
 
 def cli():
     import sys, json
-    args, task_args = parse_args()
-    if task_args is None:
+    args, script_args = parse_args()
+    if script_args is None:
         sys.exit(1)
     print(json.dumps(vars(args), indent=4))
     sys.exit(0)
 
 
 def main():
-    args, task_args = parse_args()
-    job_name = args.job if args.job is not None else args.task_name
-    task_details = {
-            "args": task_args,
-            "name": args.name,
-            "script": args.name, # Name of the script, in schedule we assume it's the same as task name
+    args, script_args = parse_args()
+    job = {
+            "script": args.script,
+            "script_args": script_args,
             "dependencies": args.dependencies,
             "pre-commands": args.pre_commands,
             "slurm": {
@@ -106,14 +107,14 @@ def main():
         }
     }
     
-    save_task(
-            task_details=task_details,
-            job_name=job_name,
-            task_name=args.task_name,
+    name = args.bundle if args.bundle is not None else args.script
+    save_job(
+            job,
+            bundle_name=name,
             append=args.append
-            )
+    )
 
     if args.run_now:
         config = machine_config(args)
-        run_job(args.name, machine_config=config)
+        run_jobs(name, machine_config=config)
 

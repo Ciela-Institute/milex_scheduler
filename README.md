@@ -3,7 +3,7 @@
 Milex Scheduler is a package that simplifies the process of scheduling and running jobs on a SLURM cluster. It provides an abstraction layer over the SLURM shell scripts, allowing you to schedule jobs with a single command line interface (CLI) tool.
 
 TODO: Clarify the docs. Should have usage first with simple examples
-TODO: Mention the append features, distinction between task and job (useful for chaining them)
+TODO: Mention the append feature
 TODO: mention the key functions that can be used in a package.
 TODO: Have a function that runs a job, without necessarily loading it. Might be useful for sampling package?
 TODO: A way to handle the machine that does not enter the script in the spirit of reproducibility
@@ -229,7 +229,7 @@ The directory structure post-configuration will be:
 ├── jobs
 │   ├── *name*_*date*.json
 ├── slurm
-│   ├── *name*_*date*_*task_name*.sh
+│   ├── *name*_*date*_*job_name*.sh
 ├── models
 ├── results
 └── data

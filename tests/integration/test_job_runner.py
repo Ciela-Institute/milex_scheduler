@@ -1,7 +1,7 @@
 import os
 import pytest
 from unittest.mock import patch, MagicMock
-from milex_scheduler import save_job, run_job
+from milex_scheduler import save_bundle, run_jobs
 from glob import glob
 
 # Mock Data for Job Configurations
@@ -21,14 +21,14 @@ mock_jobs = {
         "args": {"param1": "value1", "param2": "value2"},
     },
     "JobB": {
-        "name": "JobA",
+        "name": "JobB",
         "script": "run_job_b",
         "dependencies": ["JobA"],
         "slurm": {"tasks": 1, "cpus_per_task": 2, "mem": "8G", "time": "02:00:00"},
         "args": {"param1": "value3", "param2": "value4"},
     },
     "JobC": {
-        "name": "JobA",
+        "name": "JobC",
         "script": "run_job_c",
         "dependencies": ["JobA", "JobB"],
         "slurm": {"tasks": 1, "cpus_per_task": 4, "mem": "16G", "time": "03:00:00"},
@@ -42,7 +42,7 @@ mock_job_ids = {"JobA": "12345",
                 "JobB": "67890", 
                 "JobC": "54321"}
 
-expected_job_script_content = {
+expected_bundle_content = {
         "JobA": [
             "#!/bin/bash\n",
             "#SBATCH --output=/path/to/remote/slurm/%x-%j.out\n",
@@ -111,9 +111,9 @@ def setup_mock_ssh_client() -> MagicMock:
     # Define the behavior of exec_command to cycle through job IDs
     def mock_exec_command(cmd):
         job = os.path.split(cmd)[-1]
-        # Get the task name out of script name, which is {job_name}_{date}_{task_name}.sh
-        task_name = job.split('_')[-2].split('.')[0] # See make_script_name in scheduler/utils.py, task_name is saved as the second to last element
-        job_id = mock_job_ids[task_name]
+        # Get the job name out of script name, which is {job_name}_{date}_{job_name}.sh
+        job_name = job.split('_')[-2].split('.')[0] # See make_script_name in scheduler/utils.py, job_name is saved as the second to last element
+        job_id = mock_job_ids[job_name]
         # Update the return value of read each time exec_command is called
         mock_stdout.read.return_value = f"Submitted batch job {job_id}".encode('utf-8')
         return mock_stdin, mock_stdout, mock_stderr
@@ -143,15 +143,15 @@ def mock_load_config(monkeypatch,  tmp_path):
 
 # Mocking File I/O and Remote SSH interactions
 @patch("paramiko.SSHClient", new_callable=lambda: setup_mock_ssh_client)
-@patch("milex_scheduler.run_slurm.run_script_remotely")
+@patch("milex_scheduler.run_slurm.run_slurm_remotely")
 def test_integration_schedule_jobs(
         mock_run_script_remotely,
         mock_ssh_client,
         mock_load_config
         ):
     # Save the mock jobs to a JSON file
-    save_job(mock_jobs, mock_job_name)
-    run_job(mock_job_name, machine_config=mock_machine_config)
+    save_bundle(mock_jobs, mock_job_name)
+    run_jobs(mock_job_name, machine_config=mock_machine_config)
 
     # Now check the content of the SLURM scripts  generated
     user_config = mock_load_config()
@@ -167,13 +167,13 @@ def test_integration_schedule_jobs(
     for file in files_created:
         with open(file, 'r') as f:
             script_content = f.readlines()
-        # extract task name from file name (see make_script_name in scheduler/utils.py, task_name is saved as the second to last element)
-        task_name = os.path.split(file)[-1].split('_')[-2].split('.')[0]
+        # extract job name from file name (see make_script_name in scheduler/utils.py, job_name is saved as the second to last element)
+        job_name = os.path.split(file)[-1].split('_')[-2].split('.')[0]
         # Check if the content of the script matches the expected content
-        expected_content_lines = expected_job_script_content[task_name]
+        expected_content_lines = expected_bundle_content[job_name]
         for i, (line, expected_line) in enumerate(zip(script_content, expected_content_lines)):
             print(line, expected_line)
-            assert line == expected_line, f"Mismatch for task {task_name} script at line {i}"
+            assert line == expected_line, f"Mismatch for job {job_name} script at line {i}"
 
     
 
@@ -194,7 +194,7 @@ mock_jobs_error = {
 }
 # Mocking File I/O and Remote SSH interactions
 @patch("paramiko.SSHClient", new_callable=lambda: setup_mock_ssh_client)
-@patch("milex_scheduler.run_slurm.run_script_remotely")
+@patch("milex_scheduler.run_slurm.run_slurm_remotely")
 def test_integration_schedule_jobs_with_error(
         mock_run_script_remotely,
         mock_ssh_client,
@@ -202,7 +202,7 @@ def test_integration_schedule_jobs_with_error(
         ):
     with pytest.raises(ValueError):
         # Save the mock jobs to a JSON file
-        save_job(mock_jobs_error, mock_job_name)
-        run_job(mock_job_name, machine_config=mock_machine_config)
+        save_bundle(mock_jobs_error, mock_job_name)
+        run_jobs(mock_job_name, machine_config=mock_machine_config)
         # Missing script name should raise an error
 

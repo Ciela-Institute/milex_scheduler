@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import patch, MagicMock, Mock
 from unittest.mock import Mock
 from milex_scheduler.run_slurm import get_job_id_from_sbatch_output
-from milex_scheduler.run_slurm import run_script_remotely, run_script_locally
+from milex_scheduler.run_slurm import run_slurm_remotely, run_slurm_locally
 
 
 @pytest.fixture
@@ -40,7 +40,7 @@ def test_get_job_id_from_sbatch_output_failure():
         get_job_id_from_sbatch_output(output)
 
 
-def test_run_script_remotely(mock_ssh):
+def test_run_slurm_remotely(mock_ssh):
     # Ensure that read() returns bytes
     mock_machine_config = {
         'hostname': 'testhost',
@@ -50,7 +50,7 @@ def test_run_script_remotely(mock_ssh):
     }
 
     # Call the function
-    job_id = run_script_remotely('remote_script.sh', machine_config=mock_machine_config)
+    job_id = run_slurm_remotely('remote_script.sh', machine_config=mock_machine_config)
 
     assert job_id == "12345"
     # Those assertions fails, function calls is not registered with current approach
@@ -59,12 +59,12 @@ def test_run_script_remotely(mock_ssh):
 
 
 @patch('subprocess.run')
-def test_run_script_locally(mock_run):
+def test_run_slurm_locally(mock_run):
     # Setup mock behavior
     mock_run.return_value = Mock(stdout="Submitted batch job 67890")
 
     # Call the function
-    job_id = run_script_locally('local_script.sh')
+    job_id = run_slurm_locally('local_script.sh')
 
     assert job_id == "67890"
     # Same as test above

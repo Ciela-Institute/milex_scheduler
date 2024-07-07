@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from milex_scheduler.apps.milex_schedule import parse_task_args, parse_args, main
+from milex_scheduler.apps.milex_schedule import parse_script_args, parse_args, main
 from argparse import Namespace
 import os
 import json
@@ -20,10 +20,10 @@ def mock_run():
 @pytest.fixture
 def mock_run_job():
     """
-    We avoid the full integration of run_job, which is integrated in another test (see test_job_runner.py)
-    Here, we test up until the point where run_job is called.
+    We avoid the full integration of run_jobs, which is integrated in another test (see test_job_runner.py)
+    Here, we test up until the point where run_jobs is called.
     """
-    with patch("milex_scheduler.apps.milex_schedule.run_job") as mock_run_job:
+    with patch("milex_scheduler.apps.milex_schedule.run_jobs") as mock_run_job:
         yield mock_run_job
 
 
@@ -32,8 +32,8 @@ def mock_parse_known_args():
     with patch("argparse.ArgumentParser.parse_known_args") as mock_parse_known_args:
         mock_parse_known_args.return_value = (
             Namespace(
-                name="job_name",
-                task_name="task_name",
+                script="job_name",
+                bundle="bundle_name",
                 job=None,
                 append=False,
                 run_now=False,
@@ -82,22 +82,22 @@ Tests
 """
 
 
-def test_parse_task_args_success(mock_run):
+def test_parse_script_args_success(mock_run):
     """
     Test that the function returns the job arguments correctly as a dictionary,
     simulating the behavior of a CLI application outputting JSON.
     """
-    job_args = parse_task_args(
+    job_args = parse_script_args(
         "job_name", ["--custom_arg1", "value1", "--custom_arg2", "value2"]
     )
     expected_dict = {"custom_arg1": "value1", "custom_arg2": "value2"}
     assert job_args == expected_dict
 
 
-def test_parse_task_args_error(mock_run):
+def test_parse_script_args_error(mock_run):
     mock_run.return_value = MagicMock(returncode=1, stderr="error")
     with pytest.raises(ValueError):
-        job_args = parse_task_args(
+        job_args = parse_script_args(
             "job_name", ["--custom_arg1", "value1", "--custom_arg2", "value2"]
         )
 
@@ -109,7 +109,7 @@ def test_cli(mock_parse_known_args, mock_run):
         stdout=json.dumps({"custom_arg1": "value1", "custom_arg2": "value2"}, indent=4),
     )
     args, job_args = parse_args()
-    assert args.name == "job_name"
+    assert args.script == "job_name"
     # Parse the JSON string to assert the dictionary contents
     expected_job_args = job_args
     assert expected_job_args == {"custom_arg1": "value1", "custom_arg2": "value2"}
@@ -131,8 +131,8 @@ def test_main(
     # Modify mock_parse_known_args to simulate --run_now
     mock_parse_known_args.return_value = (
         Namespace(
-            name="job_name",
-            task_name="task_name",
+            script="job_name",
+            bundle="bundle_name",
             job=None,
             append=False,
             run_now=True,
