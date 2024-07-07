@@ -133,5 +133,5 @@ Both `my-script` and `my-script-cli` must be registered in the `pyproject.toml`
 file for `milex-schedule` to be able to run your script.
 
 Once your script is registered, it can be scheduled and run using the
-`milex-schedule` and `milex-run` commands. More information on these commands
+`milex-schedule` and `milex-submit` commands. More information on these commands
 can be found in the [Getting Started](./getting_started.md) section.
