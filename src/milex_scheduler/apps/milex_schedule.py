@@ -49,7 +49,7 @@ def parse_args():
                                                        'If not provided, the script name is used as the bundle name.') 
     parser.add_argument('--append', action='store_true', help='Append the job to an existing bundle. '
                                                               'If not provided, a new unique bundle is created using current timestamp.')
-    parser.add_argument('--run-now', action='store_true', help='Send/run the job immediately after scheduling it.')
+    parser.add_argument('--submit', action='store_true', help='Submit the job immediately after scheduling it.')
     parser.add_argument('--dependencies', required=False, nargs='+', help='List of jobs that this job depends on to run.')
     # TODO add this argument, possibly a list of same shape as depencies or single element, which will modify the type of dependency
     # parser.add_argument('--dependency_type', default='afterok', choices=[''...], help='Type of dependency to use for SLURM job submission.')
@@ -114,7 +114,7 @@ def main():
             append=args.append
     )
 
-    if args.run_now:
+    if args.submit:
         config = machine_config(args)
         run_jobs(name, machine_config=config)
 

@@ -1,9 +1,9 @@
-import pytest
 from unittest.mock import patch, MagicMock
 from milex_scheduler.apps.milex_schedule import parse_script_args, parse_args, main
 from argparse import Namespace
-import os
+import pytest
 import json
+import os
 
 
 @pytest.fixture
@@ -36,7 +36,7 @@ def mock_parse_known_args():
                 bundle="bundle_name",
                 job=None,
                 append=False,
-                run_now=False,
+                submit=False,
                 dependencies=None,
                 pre_commands=None,
                 array=None,
@@ -135,7 +135,7 @@ def test_main(
             bundle="bundle_name",
             job=None,
             append=False,
-            run_now=True,
+            submit=True,
             dependencies=[],
             pre_commands=[],
             array=None,

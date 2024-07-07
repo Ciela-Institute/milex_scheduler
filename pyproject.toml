@@ -28,6 +28,6 @@ lint = [
 
 [project.scripts]
 milex-configuration = "milex_scheduler.apps.milex_configuration:main"
-milex-run = "milex_scheduler.apps.milex_run:main"
+milex-submit = "milex_scheduler.apps.milex_submit:main"
 milex-schedule = "milex_scheduler.apps.milex_schedule:main"
 
