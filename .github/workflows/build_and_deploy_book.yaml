@@ -1,4 +1,4 @@
-csname: Build and Deploy Jupyter Book
+name: Build and Deploy Jupyter Book
 
 on:
   push:
