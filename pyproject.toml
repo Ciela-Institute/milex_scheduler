@@ -10,9 +10,7 @@ authors = [
 description = "The Milex project job scheduler for the HPC cluster and code reproducibility"
 readme = "README.md"
 requires-python = ">=3.8"
-dependencies = [
-    "paramiko",
-]
+dependencies = []
 version = "0.1.0"
 
 [project.optional-dependencies]
@@ -30,4 +28,3 @@ lint = [
 milex-configuration = "milex_scheduler.apps.milex_configuration:main"
 milex-submit = "milex_scheduler.apps.milex_submit:main"
 milex-schedule = "milex_scheduler.apps.milex_schedule:main"
-

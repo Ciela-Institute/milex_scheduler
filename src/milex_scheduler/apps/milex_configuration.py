@@ -1,9 +1,9 @@
 import os
 import subprocess
 import json
-import paramiko
 import socket
 from ..definitions import CONFIG_FILE_PATH
+from ..utils import ssh_host_from_config
 
 
 def expand_path(path):
@@ -11,16 +11,17 @@ def expand_path(path):
     return os.path.abspath(os.path.expanduser(os.path.expandvars(path)))
 
 
-def setup_directories(base_path, directories, ssh_client=None):
-    """Create required directories at the specified base path, locally or remotely."""
+def setup_directories(base_path, directories, hostname=None):
+    """Create required directories at the specified base path"""
     for directory in directories:
         path = os.path.join(base_path, directory)
-        command = f"mkdir -p {path}"
-        if ssh_client:
-            stdin, stdout, stderr = ssh_client.exec_command(command)
-            if stderr.readlines():
-                print(f"Error creating {path} remotely.")
-                print(f"Error message: {stderr.readlines()}")
+        if hostname is not None:
+            ssh_command = ["ssh", hostname, f"mkdir -p {path}"]
+            result = subprocess.run(ssh_command, capture_output=True, text=True)
+            # Check for errors
+            if result.returncode != 0:
+                print(f"Error creating {path} directory on remote machine.")
+                print(f"Error message: {result.stderr}")
             else:
                 print(f"Created or found existing remote directory: {path}")
         else:
@@ -31,11 +32,12 @@ def setup_directories(base_path, directories, ssh_client=None):
                 print(f"Directory already exists: {path}")
 
 
-def update_bashrc(base_path, ssh_client=None):
+def update_bashrc(base_path, hostname=None):
     """Append MILEX environment variable to .bashrc for persistence, locally or remotely."""
     bash_command = f'echo "export MILEX=\\"{base_path}\\"" >> ~/.bashrc'
-    if ssh_client:
-        ssh_client.exec_command(bash_command)
+    if hostname is not None:
+        ssh_command = ["ssh", hostname, bash_command]
+        subprocess.run(ssh_command)
     else:
         os.system(bash_command)
 
@@ -80,9 +82,10 @@ def main():
                 "path": "/path/to/remote/milex",
                 "env_command": "source /path/to/remote/venv/bin/activate",
                 "slurm_account": "rrg-account_name",
-                "hostname": "remote1.example.com",
+                "hostname": "machine",
+                "hosturl": "machine.domain.com",
                 "username": "user1",
-                "key_path": "~/.ssh/id1_rsa",
+                "key_path": "~/.ssh/id_rsa",
             },
         }
         with open(CONFIG_FILE_PATH, "w") as file:
@@ -102,7 +105,7 @@ def main():
             "Invalid configuration. Please make sure the 'local' has a path specified."
         )
 
-    # Handle remote machines setup
+    # Handle machines setup
     for machine_name, machine_config in config.items():
         print(f"Setting up {machine_name} machine...")
 
@@ -112,27 +115,38 @@ def main():
             )
             update_bashrc(machine_config["path"])
 
-        else:  # remote machine
-            if not check_host(machine_config["hostname"]):
+        else:
+            # Check if config has a 'path' key
+            if "path" not in machine_config:
                 print(
-                    f"Error: Unable to resolve hostname '{machine_config['hostname']}' for {machine_name}."
+                    f"Error: No 'path' key found in the configuration for {machine_name}. Skipping..."
                 )
                 continue
-
-            ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(
-                machine_config["hostname"],
-                username=machine_config["username"],
-                key_filename=expand_path(machine_config["key_path"]),
-            )
-
-            setup_directories(
-                machine_config["path"],
-                ["data", "models", "slurm", "jobs", "results"],
-                ssh_client=ssh,
-            )
-            # update_bashrc(machine_config["path"], ssh_client=ssh)
-            ssh.close()
+            # Check if machine is a remote machine
+            if any(
+                key in machine_config for key in ["hostname", "username", "hosturl"]
+            ):
+                # Check if hostname is resolvable
+                hostname = ssh_host_from_config(machine_config, machine_name)
+                if not check_host(hostname):
+                    print(
+                        f"Error: Unable to resolve hostname '{machine_config['hostname']}' for {machine_name}."
+                    )
+                    continue
+                else:
+                    # Machine is resolvable, proceed with setting up directories
+                    setup_directories(
+                        machine_config["path"],
+                        ["data", "models", "slurm", "jobs", "results"],
+                        hostname=hostname,
+                    )
+                    update_bashrc(machine_config["path"], hostname=hostname)
+            else:  # Local machine
+                if machine_config["path"] != config["local"]["path"]:
+                    print(
+                        f"Machine {machine_name} path '{machine_config['path']}' does not match the local machine path '{config['local']['path']}'. "
+                        f"Only one path is supported per machine. Skipping..."
+                    )
+                continue
 
     print("Milex setup is complete.")

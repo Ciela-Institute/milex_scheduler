@@ -8,6 +8,7 @@ DATE_FORMAT = "%Y%m%d%H%M%S"
 CONFIG_FILE_PATH = os.path.expanduser("~/.milexconfig")
 MACHINE_KEYS = [
     "hostname",
+    "hosturl",
     "username",
     "key_path",
     "path",

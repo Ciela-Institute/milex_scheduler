@@ -3,7 +3,7 @@ from milex_scheduler.save_load_jobs import (
     save_job,
     save_bundle,
     transfer_slurm_to_remote,
-    nearest_bundle_filename
+    nearest_bundle_filename,
 )
 from milex_scheduler import DATE_FORMAT
 from unittest.mock import patch
@@ -16,40 +16,13 @@ import pytest
 """
 Fixtures
 """
+
+
 @pytest.fixture
 def mock_ssh():
-    # Create a mock SSH client using Transport and a custom MagicMock
-    mock_ssh = MagicMock()
-
-    def create_mock_transport(*args, **kwargs):
-        # Create a mock Transport object
-        mock_transport = MagicMock()
-
-        # Mock the behavior of the Transport object
-        def connect(*args, **kwargs):
-            pass  # Mock the connection behavior
-
-        def open_sftp():
-            mock_sftp = MagicMock()
-
-            # Mock the SFTP put method
-            def put(local_path, remote_path):
-                pass  # Mock the put behavior
-
-            mock_sftp.put.side_effect = put
-            return mock_sftp
-
-        mock_transport.connect.side_effect = connect
-        mock_transport.open_sftp.side_effect = open_sftp
-
-        return mock_transport
-
-    # Patch paramiko.SSHClient in the correct module
-    with patch("paramiko.SSHClient", new_callable=MagicMock) as mock_ssh_client:
-        mock_ssh_client.return_value.get_transport.side_effect = create_mock_transport
-
-        # Return the mock SSH client
-        yield mock_ssh
+    with patch("subprocess.run") as mock_run:
+        mock_run.return_value = MagicMock(returncode=0, stdout="success", stderr="")
+        yield mock_run
 
 
 @pytest.fixture
@@ -65,13 +38,16 @@ def mock_job_script(tmp_path):
 def mock_load_config(tmp_path):
     mock_config = {"local": {"path": tmp_path}}
     os.makedirs(tmp_path / "jobs", exist_ok=True)
-    with patch("milex_scheduler.save_load_jobs.load_config", return_value=mock_config) as mock_load_config:
+    with patch(
+        "milex_scheduler.save_load_jobs.load_config", return_value=mock_config
+    ) as mock_load_config:
         yield mock_load_config
 
 
 """
 Test save and load jobs
 """
+
 
 # Helper functions
 def create_mock_job_file(tmp_path, job_name, data):
@@ -84,39 +60,39 @@ def create_mock_job_file(tmp_path, job_name, data):
 
 def test_nearest_bundle_file(tmp_path, mock_load_config):
     print(tmp_path)
-    job_dir = os.path.join(tmp_path, 'jobs')
+    job_dir = os.path.join(tmp_path, "jobs")
     os.makedirs(job_dir, exist_ok=True)
     # Create some job files with different dates
     job_files = [
-        'job1_20220101000000.json',
-        'job1_20220102000000.json',
-        'job1_20220103000000.json',
-        'job2_20220101000000.json',
-        'job2_20220102000000.json',
-        'job2_20220103000000.json',
+        "job1_20220101000000.json",
+        "job1_20220102000000.json",
+        "job1_20220103000000.json",
+        "job2_20220101000000.json",
+        "job2_20220102000000.json",
+        "job2_20220103000000.json",
     ]
     for file in job_files:
         file_path = os.path.join(job_dir, file)
-        with open(file_path, 'w') as f:
-            f.write('')
-    
+        with open(file_path, "w") as f:
+            f.write("")
+
     # Test with desired_date=None
-    result, date = nearest_bundle_filename('job1', desired_date=None)
-    assert result == 'job1_20220103000000.json'
-    
+    result, date = nearest_bundle_filename("job1", desired_date=None)
+    assert result == "job1_20220103000000.json"
+
     # Test with desired_date=datetime(2022, 1, 2, 0, 0, 0)
     desired_date = datetime(2022, 1, 2, 0, 0, 0)
-    result, date = nearest_bundle_filename('job1', desired_date=desired_date)
-    assert result == 'job1_20220102000000.json'
-    
+    result, date = nearest_bundle_filename("job1", desired_date=desired_date)
+    assert result == "job1_20220102000000.json"
+
     # Test with desired_date=datetime(2022, 1, 1, 0, 0, 0)
     desired_date = datetime(2022, 1, 1, 0, 0, 0)
-    result, date = nearest_bundle_filename('job2', desired_date=desired_date)
-    assert result == 'job2_20220101000000.json'
-    
+    result, date = nearest_bundle_filename("job2", desired_date=desired_date)
+    assert result == "job2_20220101000000.json"
+
     # Test with non-existent job name
     with pytest.raises(FileNotFoundError):
-        nearest_bundle_filename('job3')
+        nearest_bundle_filename("job3")
 
 
 def test_save_job_success(tmp_path, mock_load_config):
@@ -126,15 +102,17 @@ def test_save_job_success(tmp_path, mock_load_config):
 
     # Set custom user_config path to tmp_path
     save_bundle(mock_jobs, bundle_name)
-    
+
     files = os.listdir(tmp_path / "jobs")
     assert len(files) == 1
     assert files[0].startswith(bundle_name)
     # Read date from file name with DATE_FORM
     file_name = files[0].split(".")[0]
     file_date = datetime.strptime(file_name.split("_")[-1], DATE_FORMAT)
-    assert abs((file_date - now).total_seconds()) < 1 # Check that the date is approximately the same as the current date
-    
+    assert (
+        abs((file_date - now).total_seconds()) < 1
+    )  # Check that the date is approximately the same as the current date
+
 
 def test_save_load_job(tmp_path, mock_load_config):
     # Prepare mock data
@@ -144,13 +122,13 @@ def test_save_load_job(tmp_path, mock_load_config):
         "JobC": {"dependencies": ["JobA", "JobB"]},
     }
     bundle_name = "dummy_bundle"
-    
+
     # Save the bundle of jobs
     save_bundle(mock_data, bundle_name)
 
     # Load back in the bundle
     jobs, dependencies, date = load_bundle(bundle_name)
-    
+
     print("Jobs", jobs)
     print("Dependency graph", dependencies)
 
@@ -173,7 +151,7 @@ def test_load_job_topological_sorting(tmp_path, mock_load_config):
 
     # Load back in the job
     jobs, dependencies, date = load_bundle(bundle_name)
-    
+
     print("Jobs", jobs)
     print("Dependency graph", dependencies)
 
@@ -187,28 +165,30 @@ def test_load_job_topological_sorting(tmp_path, mock_load_config):
 
 def test_load_job_file_not_found(tmp_path, mock_load_config):
     bundle_name = "non_existent_bundle"
-    with pytest.raises(FileNotFoundError) as excinfo:
+    with pytest.raises(FileNotFoundError) as execinfo:
         load_bundle(bundle_name)
-    assert "No files found" in str(excinfo.value) # Test that our error message is being triggered
+        assert "No files found" in str(
+            execinfo.value
+        )  # Test that our error message is being triggered
 
 
 def test_save_append_jobs_to_bundle(tmp_path, mock_load_config):
     mock_jobA = {"name": "JobA", "dependencies": []}
     mock_jobB = {"name": "JobB", "dependencies": ["JobA"]}
     bundle_name = "dummy_bundle"
-    
+
     # Save jobA
     save_job(mock_jobA, bundle_name)
-    
+
     # Append jobB to the same bundle
     save_job(mock_jobB, bundle_name, append=True)
-    
+
     # Load the bundle
     jobs, dependencies, date = load_bundle(bundle_name)
-    
+
     print("Jobs", jobs)
     print("Dependency graph", dependencies)
-    
+
     assert len(jobs) == 2
     assert len(dependencies) == 2
     assert dependencies == {"JobA": ["JobB"], "JobB": []}
@@ -220,11 +200,11 @@ def test_save_bundle_type_error():
     # test bundle not a dict
     bundle_name = "mock"
     bundle = [{"key": "value"}]
-    with pytest.raises(TypeError) as excinfo:
+    with pytest.raises(TypeError):
         save_bundle(bundle, bundle_name)
     # test bundle not a dict of dict
     bundle = {"key": "value"}
-    with pytest.raises(TypeError) as excinfo:
+    with pytest.raises(TypeError):
         save_bundle(bundle, bundle_name)
 
 
@@ -233,18 +213,18 @@ def test_save_job_with_same_name_in_append_mode():
     mock_jobA = {"name": "JobA", "dependencies": []}
     mock_jobB = {"name": "JobA", "dependencies": []}
     bundle_name = "dummy_bundle"
-    
+
     # Save jobA
     save_job(mock_jobA, bundle_name)
-    
+
     # Append jobB to the same bundle
     save_job(mock_jobB, bundle_name, append=True)
-    
+
     # Load the bundle
     jobs, dependencies, date = load_bundle(bundle_name)
-    
+
     print("Jobs", jobs)
-    
+
     assert len(jobs) == 2
     assert sorted([job["name"] for job in jobs]) == ["JobA", "JobA_001"]
 
@@ -283,4 +263,3 @@ def test_transfer_script_to_remote_no_machine_found_raises_error():
         with pytest.raises(EnvironmentError) as excinfo:
             transfer_slurm_to_remote(job_name, machine_name=machine_name)
         assert "No configuration found for machine" in str(excinfo.value)
-

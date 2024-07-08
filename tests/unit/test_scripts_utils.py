@@ -9,6 +9,7 @@ def args():
     return Namespace(
         machine=None,
         hostname=None,
+        hosturl=None,
         username=None,
         key_path=None,
         path=None,
@@ -27,8 +28,6 @@ def mock_load_config(tmp_path):
         },
         "remote_machine": {
             "hostname": "remote_host",
-            "username": "remote_user",
-            "key_path": "/path/to/key",
             "path": "/path/to/dir",
             "env_command": "source activate env",
             "slurm_account": "def-bengioy",
@@ -47,6 +46,7 @@ def test_machine_config_custom_machine_complete(mock_load_config, args):
     mock_config = {
         "local": {
             "hostname": "localhost",
+            "hosturl": "host.url.com",
             "username": "user",
             "key_path": "/path/to/key",
             "path": "/path/to/dir",
@@ -72,15 +72,14 @@ def test_machine_config_incomplete(mock_load_config, args):
 def test_machine_config_custom_remote_machine_missing_keys(args):
     """
     Test that the function raises a ValueError when the custom remote machine configuration is missing keys.
-
     """
     args.hostname = "remote_host"
-    args.username = "remote_user"
-    args.key_path = "/path/to/key"
     args.path = "/path/to/dir"
     args.slurm_account = "account"
 
-    with pytest.raises(AttributeError, match="env_command"): # Check that the error message contains specific info about missing key
+    with pytest.raises(
+        AttributeError, match="env_command"
+    ):  # Check that the error message contains specific info about missing key
         machine_config(args)
 
 
@@ -99,13 +98,11 @@ def test_machine_config_custom_remote_machine(args, mock_load_config):
 
     expected_result = {  # See the mock_load_config fixture
         "hostname": "remote_host",
-        "username": "remote_user",
-        "key_path": "/path/to/key",
         "path": "/path/to/dir",
         "env_command": "source activate env",
         "slurm_account": "def-bengioy",
     }
-    
+
     for key, value in expected_result.items():
         assert result[key] == value
 
@@ -133,8 +130,10 @@ def test_machine_config_local_machine_default(args, mock_load_config):
     result = machine_config(args)
     assert result["path"] == args.path
     assert result["env_command"] == args.env_command
-    assert result["slurm_account"] == 'def-bengioy' # See fixture, check that local machine defeault is used
-    
+    assert (
+        result["slurm_account"] == "def-bengioy"
+    )  # See fixture, check that local machine default is used
+
 
 def test_missing_slurm_account(args, mock_load_config):
     mock_config = {
@@ -149,6 +148,7 @@ def test_missing_slurm_account(args, mock_load_config):
     with pytest.raises(AttributeError, match="slurm_account"):
         machine_config(args)
 
+
 def test_missing_path(args, mock_load_config):
     mock_config = {
         "local": {
@@ -162,6 +162,7 @@ def test_missing_path(args, mock_load_config):
     with pytest.raises(AttributeError, match="path"):
         machine_config(args)
 
+
 def test_missing_env_command(args, mock_load_config):
     mock_config = {
         "local": {
@@ -174,4 +175,3 @@ def test_missing_env_command(args, mock_load_config):
 
     with pytest.raises(AttributeError, match="env_command"):
         machine_config(args)
-

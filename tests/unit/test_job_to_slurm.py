@@ -1,29 +1,21 @@
 import pytest
 from io import StringIO
-from unittest.mock import patch
 from milex_scheduler.job_to_slurm import write_slurm_content
 from milex_scheduler import load_config
 
 
-@pytest.fixture
-def mock_ssh_client():
-    with patch('paramiko.SSHClient') as mock:
-        yield mock
-
-
 def test_write_slurm_content():
     job = {
-        'name': 'test_job',
-        'slurm': {'time': '01:00:00', 'partition': 'test-partition', 'array': '1-10%6'},
-        'args': {'arg1': 'value1', 'arg2': [1, 2, 3]},
-        'script': 'test-application'
+        "name": "test_job",
+        "slurm": {"time": "01:00:00", "partition": "test-partition", "array": "1-10%6"},
+        "args": {"arg1": "value1", "arg2": [1, 2, 3]},
+        "script": "test-application",
     }
     file = StringIO()
 
     user_settings = load_config()
     machine_config = user_settings["local"]
     write_slurm_content(file, job, machine_config)
-
 
     content = file.getvalue()
     assert "#SBATCH --time=01:00:00" in content
@@ -34,16 +26,19 @@ def test_write_slurm_content():
     assert "--arg2 1 2 3" in content
 
 
-@pytest.mark.parametrize("conditional_flag, expected_line", [
-    (True, "  --conditional"),  # Test for boolean True
-    (False, ""),  # Test for boolean False, should result in no line
-])
+@pytest.mark.parametrize(
+    "conditional_flag, expected_line",
+    [
+        (True, "  --conditional"),  # Test for boolean True
+        (False, ""),  # Test for boolean False, should result in no line
+    ],
+)
 def test_write_slurm_boolean_flag(conditional_flag, expected_line):
     job = {
-        'name': 'boolean_flag_test',
-        'slurm': {},
-        'args': {'conditional': conditional_flag},
-        'script': 'test-boolean-application'
+        "name": "boolean_flag_test",
+        "slurm": {},
+        "args": {"conditional": conditional_flag},
+        "script": "test-boolean-application",
     }
     file = StringIO()
 
@@ -53,14 +48,17 @@ def test_write_slurm_boolean_flag(conditional_flag, expected_line):
 
     content = file.getvalue()
     print(content)
-    assert expected_line in content, f"Conditional flag handling failed for {conditional_flag}"
+    assert (
+        expected_line in content
+    ), f"Conditional flag handling failed for {conditional_flag}"
+
 
 def test_write_slurm_with_none_value():
     job = {
-        'name': 'none_value_test',
-        'slurm': {},
-        'args': {'arg_with_none': None},  # Test handling None value
-        'script': 'test-none-application'
+        "name": "none_value_test",
+        "slurm": {},
+        "args": {"arg_with_none": None},  # Test handling None value
+        "script": "test-none-application",
     }
     file = StringIO()
 
@@ -70,21 +68,24 @@ def test_write_slurm_with_none_value():
 
     content = file.getvalue()
     print(content)
-    assert "--arg_with_none=None" not in content, "None value should not be included in the script"
+    assert (
+        "--arg_with_none=None" not in content
+    ), "None value should not be included in the script"
+
 
 def test_write_slurm_with_pre_commands_and_env_command():
     job = {
-        'name': 'pre_commands_test',
-        'slurm': {},
-        'args': {},
-        'script': 'test-pre-commands-application',
-        'pre_commands': ['module load python', 'module load cuda']
+        "name": "pre_commands_test",
+        "slurm": {},
+        "args": {},
+        "script": "test-pre-commands-application",
+        "pre_commands": ["module load python", "module load cuda"],
     }
     file = StringIO()
 
     user_settings = load_config()
     machine_config = user_settings["local"]
-    machine_config['env_command'] = 'source activate test-env'
+    machine_config["env_command"] = "source activate test-env"
     write_slurm_content(file, job, machine_config)
 
     content = file.getvalue()
@@ -93,12 +94,13 @@ def test_write_slurm_with_pre_commands_and_env_command():
     assert "module load cuda" in content
     assert "source activate test-env" in content
 
+
 def test_write_slurm_output_dir_customization():
     job = {
-        'name': 'output_dir_test',
-        'slurm': {'output': 'custom-output-%j.txt'},
-        'args': {},
-        'script': 'test-output-dir-application'
+        "name": "output_dir_test",
+        "slurm": {"output": "custom-output-%j.txt"},
+        "args": {},
+        "script": "test-output-dir-application",
     }
     file = StringIO()
 
@@ -107,6 +109,6 @@ def test_write_slurm_output_dir_customization():
     write_slurm_content(file, job, machine_config)
 
     content = file.getvalue()
-    assert "#SBATCH --output=custom-output-%j.txt" in content, "Custom output directory setting failed"
-
-
+    assert (
+        "#SBATCH --output=custom-output-%j.txt" in content
+    ), "Custom output directory setting failed"

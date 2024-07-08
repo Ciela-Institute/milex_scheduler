@@ -25,19 +25,20 @@ be presented with the following file template
 
 ```json
 {
-    "local": {
-        "path": "/path/to/local/milex",
-        "env_command": "source /path/to/local/venv/bin/activate",
-        "slurm_account": "def-bengioy"
-        },
-    "remote_machine": {
-        "path": "/path/to/remote/milex",
-        "env_command": "source /path/to/remote/venv/bin/activate",
-        "slurm_account": "def-bengioy"
-        "hostname": "remote1.example.com",
-        "username": "user1",
-        "key_path": "~/.ssh/id1_rsa",
-    }
+  "local": {
+    "path": "/path/to/local/milex",
+    "env_command": "source /path/to/local/venv/bin/activate",
+    "slurm_account": "def-bengioy"
+  },
+  "remote_machine": {
+    "path": "/path/to/remote/milex",
+    "env_command": "source /path/to/remote/venv/bin/activate",
+    "slurm_account": "rrg-account_name",
+    "hostname": "machine",
+    "hosturl": "machine.domain.com",
+    "username": "user1",
+    "key_path": "~/.ssh/id_rsa"
+  }
 }
 ```
 
@@ -139,12 +140,22 @@ configuration file. **Notes**:
 
 #### `hostname`
 
-This field specifies the hostname or IP address of the remote machine. For
-example, `beluga.computecanada.ca`.
+This field specifies the hostname of a remote machine from the `~/.ssh/config`
+file. For more details on how to create an SSH config file, see the section
+[Create an SSH config file](config).
+
+**Note**: This is the preferable way to specify the hostname of the remote
+machine. If provided, the other fields `hosturl`, `username`, and `key_path` are
+not required.
 
 #### `username`
 
 This field specifies your username on the remote machine. For example, `user1`.
+
+#### `hosturl`
+
+This field specifies the URL of the remote machine. For example,
+`machine.domain.com`.
 
 #### `key_path`
 
@@ -194,7 +205,9 @@ connect to the remote machine without being prompted for a password.
 ssh username@hostname
 ```
 
-### Create an SSH config file (optional)
+(config)=
+
+## Create an SSH config file (recommended)
 
 To simplify the SSH connection process even more, you can create an SSH config
 file at `~/.ssh/config` with the following content
@@ -211,6 +224,9 @@ With this, you can connect to the remote machine using the following command
 ```bash
 ssh remote_machine
 ```
+
+Similarly, you will only need to specify the `hostname` in your
+`milex-configuration` to connect to the remote machine.
 
 ### Dealing with 2FA authentication
 
