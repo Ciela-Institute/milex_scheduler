@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch, MagicMock, Mock
 from milex_scheduler.run_slurm import get_job_id_from_sbatch_output
 from milex_scheduler.run_slurm import run_slurm_remotely, run_slurm_locally
+import os
 
 
 @pytest.fixture
@@ -12,6 +13,16 @@ def mock_ssh():
             returncode=0, stdout="Submitted batch job 12345\n", stderr=""
         )
         yield mock_run
+
+
+@pytest.fixture
+def mock_load_config(tmp_path):
+    mock_config = {"local": {"path": tmp_path}}
+    os.makedirs(tmp_path / "jobs", exist_ok=True)
+    with patch(
+        "milex_scheduler.run_slurm.load_config", return_value=mock_config
+    ) as mock_load_config:
+        yield mock_load_config
 
 
 def test_get_job_id_from_sbatch_output():
@@ -26,7 +37,7 @@ def test_get_job_id_from_sbatch_output_failure():
         get_job_id_from_sbatch_output(output)
 
 
-def test_run_slurm_remotely(mock_ssh):
+def test_run_slurm_remotely(mock_ssh, mock_load_config):
     # Ensure that read() returns bytes
     mock_machine_config = {
         "hostname": "testhost",
@@ -42,7 +53,7 @@ def test_run_slurm_remotely(mock_ssh):
 
 
 @patch("subprocess.run")
-def test_run_slurm_locally(mock_run):
+def test_run_slurm_locally(mock_run, mock_load_config):
     # Setup mock behavior
     mock_run.return_value = Mock(stdout="Submitted batch job 67890")
 

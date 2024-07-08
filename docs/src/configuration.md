@@ -18,10 +18,11 @@ milex-configuration
 
 ## `milex-configuration`
 
-`milex-configuration` is a shortcut to modify the configuration file
-`.milexconfig` saved in the user's home directory. When executed for the first
-time, it will create the configuration file if it does not exist, and you will
-be presented with the following file template
+'milex-configuration' is an app to configure machine settings and the directory
+structure where scripts, jobs, and various other things will be stored. When
+executed for the first time, it will create the configuration file
+'~/.milexconfig' if it does not exist, and you will be presented with the
+following file template
 
 ```json
 {
