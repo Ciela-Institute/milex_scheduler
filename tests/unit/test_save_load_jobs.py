@@ -44,6 +44,14 @@ def mock_load_config(tmp_path):
         yield mock_load_config
 
 
+# @pytest.fixture
+# def mock_CONFIG_FILE_PATH(tmp_path):
+# CONFIG_FILE_PATH = tmp_path / "config.json"
+# with open(CONFIG_FILE_PATH, "w") as f:
+# f.write('{"local": {"path": "/path/to/local"}}')
+# with patch("milex_scheduler.save_load_jobs.CONFIG_FILE_PATH", CONFIG_FILE_PATH):
+# yield CONFIG_FILE_PATH
+
 """
 Test save and load jobs
 """
@@ -259,7 +267,7 @@ def test_transfer_script_to_remote_no_config_raises_error():
 def test_transfer_script_to_remote_no_machine_found_raises_error():
     job_name = "job_name"
     machine_name = "non_existent_machine"
-    with patch("milex.load_config", return_value={}):
+    with patch("milex_scheduler.load_config", return_value={}):
         with pytest.raises(EnvironmentError) as excinfo:
             transfer_slurm_to_remote(job_name, machine_name=machine_name)
         assert "No configuration found for machine" in str(excinfo.value)
