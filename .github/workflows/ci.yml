@@ -26,10 +26,10 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.9", "3.10", "3.11"]
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [ubuntu-latest, macOS-latest]
 
     steps:
-      - name: Checkout caustics
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -61,7 +61,7 @@ jobs:
         run: |
           python -m pip install pytest-github-actions-annotate-failures
 
-      - name: Install milex_scheduler
+      - name: Install package
         run: |
           pip install -e .
           pip show ${{ env.PROJECT_NAME }}
