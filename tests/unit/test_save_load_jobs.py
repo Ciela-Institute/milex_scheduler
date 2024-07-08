@@ -44,14 +44,6 @@ def mock_load_config(tmp_path):
         yield mock_load_config
 
 
-# @pytest.fixture
-# def mock_CONFIG_FILE_PATH(tmp_path):
-# CONFIG_FILE_PATH = tmp_path / "config.json"
-# with open(CONFIG_FILE_PATH, "w") as f:
-# f.write('{"local": {"path": "/path/to/local"}}')
-# with patch("milex_scheduler.save_load_jobs.CONFIG_FILE_PATH", CONFIG_FILE_PATH):
-# yield CONFIG_FILE_PATH
-
 """
 Test save and load jobs
 """
@@ -173,11 +165,11 @@ def test_load_job_topological_sorting(tmp_path, mock_load_config):
 
 def test_load_job_file_not_found(tmp_path, mock_load_config):
     bundle_name = "non_existent_bundle"
-    with pytest.raises(FileNotFoundError) as execinfo:
+    with pytest.raises(FileNotFoundError) as excinfo:
         load_bundle(bundle_name)
-        assert "No files found" in str(
-            execinfo.value
-        )  # Test that our error message is being triggered
+    assert "No files found" in str(
+        excinfo.value
+    )  # Test that our error message is being triggered
 
 
 def test_save_append_jobs_to_bundle(tmp_path, mock_load_config):
@@ -204,7 +196,7 @@ def test_save_append_jobs_to_bundle(tmp_path, mock_load_config):
     assert jobs[1]["name"] == "JobB"
 
 
-def test_save_bundle_type_error():
+def test_save_bundle_type_error(mock_load_config):
     # test bundle not a dict
     bundle_name = "mock"
     bundle = [{"key": "value"}]
@@ -216,7 +208,7 @@ def test_save_bundle_type_error():
         save_bundle(bundle, bundle_name)
 
 
-def test_save_job_with_same_name_in_append_mode():
+def test_save_job_with_same_name_in_append_mode(mock_load_config):
     # Check that new bundle is created with an index appended
     mock_jobA = {"name": "JobA", "dependencies": []}
     mock_jobB = {"name": "JobA", "dependencies": []}
@@ -255,7 +247,7 @@ def test_transfer_script_to_remote(
     transfer_slurm_to_remote("test_job", machine_config=mock_machine_config)
 
 
-def test_transfer_script_to_remote_no_config_raises_error():
+def test_transfer_script_to_remote_no_config_raises_error(mock_load_config):
     job_name = "job_name"
     with pytest.raises(ValueError) as excinfo:
         transfer_slurm_to_remote(job_name)
@@ -264,7 +256,7 @@ def test_transfer_script_to_remote_no_config_raises_error():
     )
 
 
-def test_transfer_script_to_remote_no_machine_found_raises_error():
+def test_transfer_script_to_remote_no_machine_found_raises_error(mock_load_config):
     job_name = "job_name"
     machine_name = "non_existent_machine"
     with patch("milex_scheduler.load_config", return_value={}):
