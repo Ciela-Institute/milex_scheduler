@@ -22,16 +22,16 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r docs/requirements.txt
+          pip install -r docs_requirements.txt
 
       # Build the book
       - name: Build the book
         run: |
-          jupyter-book build docs/src
+          jupyter-book build docs
 
       # Upload the book's HTML as an artifact
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: book-preview
-          path: docs/src/_build/html # Adjust path if necessary
+          path: docs/_build/html # Adjust path if necessary
