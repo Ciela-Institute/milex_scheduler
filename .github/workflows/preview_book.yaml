@@ -1,0 +1,35 @@
+name: preview-book
+
+# Run this when the dev branch changes
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  preview-book:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # Install dependencies
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          pip install -r docs/requirements.txt
+
+      # Build the book
+      - name: Build the book
+        run: |
+          jupyter-book build docs/src
+
+      # Upload the book's HTML as an artifact
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: book-preview
+          path: docs/src/_build/html # Adjust path if necessary
