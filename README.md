@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/Ciela-Institute/milex_scheduler/graph/badge.svg?token=Pk5zRgoJCb)](https://codecov.io/gh/Ciela-Institute/milex_scheduler)
+
 # Milex-Scheduler
 
 `milex-scheduler` is a package that simplifies the process of scheduling and
