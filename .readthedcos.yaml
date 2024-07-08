@@ -7,7 +7,7 @@ version: 2
 
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
-  configuration: docs/src/conf.py
+  configuration: docs/conf.py
 
 # Optionally build your docs in additional formats such as PDF and ePub
 # formats:
@@ -29,15 +29,15 @@ build:
   jobs:
     pre_build:
       # Generate the Sphinx configuration for this Jupyter Book so it builds.
-      - "jupyter-book config sphinx docs/src/"
+      - "jupyter-book config sphinx docs/"
       # Create font cache ahead of jupyter book
       #- 'python -c "import matplotlib.pyplot as plt"'
       # Get the API documentation dynamically
-      - "sphinx-apidoc -f -o docs/src/ src/milex_scheduler"
+      - "sphinx-apidoc -f -o docs/ src/milex_scheduler"
 
 python:
   install:
-    - requirements: docs/requirements.txt # Path to your requirements.txt file
+    - requirements: docs_requirements.txt # Path to your requirements.txt file
     #- requirements: requirements.txt # Path to your requirements.txt file
     - method: pip
       path: . # Install the package itself
