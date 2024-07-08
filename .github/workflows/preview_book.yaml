@@ -5,13 +5,12 @@ on:
   push:
     branches:
       - dev
+    paths:
+      - docs/**
 
 jobs:
   preview-book:
     runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
     steps:
       - uses: actions/checkout@v3
 
@@ -28,14 +27,11 @@ jobs:
       # Build the book
       - name: Build the book
         run: |
-          jupyter-book build docs/src  # Adjust path if necessary
+          jupyter-book build docs/src
 
-      # Deploy to GitHub Pages Preview
-      - name: Deploy to GitHub Pages Preview
-        uses: peaceiris/actions-gh-pages@v3
+      # Upload the book's HTML as an artifact
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/src/_build/html # Adjust path if necessary
-          publish_branch: gh-pages-preview
-          user_name: "github-actions"
-          user_email: "github-actions@github.com"
+          name: book-preview
+          path: docs/src/_build/html # Adjust path if necessary
