@@ -1,7 +1,6 @@
 import pytest
 from io import StringIO
 from milex_scheduler.job_to_slurm import write_slurm_content
-from milex_scheduler import load_config
 from unittest.mock import patch
 import os
 
@@ -25,7 +24,7 @@ def test_write_slurm_content(mock_load_config):
     }
     file = StringIO()
 
-    user_settings = load_config()
+    user_settings = mock_load_config.return_value
     machine_config = user_settings["local"]
     write_slurm_content(file, job, machine_config)
 
@@ -54,7 +53,7 @@ def test_write_slurm_boolean_flag(conditional_flag, expected_line, mock_load_con
     }
     file = StringIO()
 
-    user_settings = load_config()
+    user_settings = mock_load_config.return_value
     machine_config = user_settings["local"]
     write_slurm_content(file, job, machine_config)
 
@@ -74,7 +73,7 @@ def test_write_slurm_with_none_value(mock_load_config):
     }
     file = StringIO()
 
-    user_settings = load_config()
+    user_settings = mock_load_config.return_value
     machine_config = user_settings["local"]
     write_slurm_content(file, job, machine_config)
 
@@ -95,7 +94,7 @@ def test_write_slurm_with_pre_commands_and_env_command(mock_load_config):
     }
     file = StringIO()
 
-    user_settings = load_config()
+    user_settings = mock_load_config.return_value
     machine_config = user_settings["local"]
     machine_config["env_command"] = "source activate test-env"
     write_slurm_content(file, job, machine_config)
@@ -116,7 +115,7 @@ def test_write_slurm_output_dir_customization(mock_load_config):
     }
     file = StringIO()
 
-    user_settings = load_config()
+    user_settings = mock_load_config.return_value
     machine_config = user_settings["local"]
     write_slurm_content(file, job, machine_config)
 
