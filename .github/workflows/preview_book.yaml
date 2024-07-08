@@ -1,0 +1,41 @@
+name: preview-book
+
+# Run this when the dev branch changes
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  preview-book:
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v3
+
+      # Install dependencies
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          pip install -r docs/requirements.txt
+
+      # Build the book
+      - name: Build the book
+        run: |
+          jupyter-book build docs  # Adjust path if necessary
+
+      # Deploy to GitHub Pages Preview
+      - name: Deploy to GitHub Pages Preview
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/_build/html # Adjust path if necessary
+          publish_branch: gh-pages-preview
+          user_name: "github-actions"
+          user_email: "github-actions@github.com"
