@@ -116,12 +116,11 @@ Multiple dependencies can be set by separating the job names with a space.
 
 ```bash
 milex-schedule job3 --append --bundle=my-bundle \
-    --dependencies job1 job2 \
-    --dependency_type afterok
+    --dependencies job1 job2
 ```
 
-The `--dependency_type` argument specifies the type of dependency. The default
-is `afterany`.
+<!--The `--dependency_type` argument specifies the type of dependency. The default-->
+<!--is `afterany`.-->
 
 **Notes**:
 
@@ -129,5 +128,5 @@ is `afterany`.
   on job2 and vice versa).
 - Order in which jobs are appended is not important. Jobs are sorted in
   topological order before submission.
-- `--dependency_type` can be a list of same length as `--dependencies` or a
-  single value to be broadcasted.
+  <!--- `--dependency_type` can be a list of same length as `--dependencies` or a-->
+    <!--single value to be broadcasted.-->
