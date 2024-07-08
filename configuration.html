@@ -1,0 +1,755 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Configuration &#8212; Milex Scheduler</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'configuration';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Register a script" href="register_an_application.html" />
+    <link rel="prev" title="Getting started" href="getting_started.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="front_page.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Milex Scheduler</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="front_page.html">
+                    Milex Scheduler
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="register_an_application.html">Register a script</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/Ciela-Institute/milex_scheduler" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/configuration.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Configuration</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#milex-configuration"><code class="docutils literal notranslate"><span class="pre">milex-configuration</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#local-machine">Local machine</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#path"><code class="docutils literal notranslate"><span class="pre">path</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#env-command"><code class="docutils literal notranslate"><span class="pre">env_command</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#slurm-account"><code class="docutils literal notranslate"><span class="pre">slurm_account</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#remote-machine">Remote machine</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hostname"><code class="docutils literal notranslate"><span class="pre">hostname</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#username"><code class="docutils literal notranslate"><span class="pre">username</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hosturl"><code class="docutils literal notranslate"><span class="pre">hosturl</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#key-path"><code class="docutils literal notranslate"><span class="pre">key_path</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-an-ssh-key">Create an SSH Key</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-an-ssh-key">Generate an SSH Key</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#link-an-ssh-key-to-the-remote-machine">Link an SSH Key to the remote machine</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-an-ssh-config-file-recommended">Create an SSH config file (recommended)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dealing-with-2fa-authentication">Dealing with 2FA authentication</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">#</a></h1>
+<p>This document provides detailed instructions for the <code class="docutils literal notranslate"><span class="pre">milex-configuration</span></code>
+command. This step abstracts away user specific information like</p>
+<ul class="simple">
+<li><p>SLURM account information (e.g. <code class="docutils literal notranslate"><span class="pre">def-bengioy</span></code>)</p></li>
+<li><p>Virtual environment activation commands (e.g.
+<code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">/path/to/remote/venv/bin/activate</span></code>)</p></li>
+<li><p>SSH credentials for remote machines</p></li>
+</ul>
+<p>This document includes steps for creating an SSH key to securely access remote
+machines in the section <a class="reference internal" href="#ssh"><span class="std std-ref">Creating an SSH Key</span></a>. To get started with the
+configuration, run this command in a command-line interface:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>milex-configuration
+</pre></div>
+</div>
+<section id="milex-configuration">
+<h2><code class="docutils literal notranslate"><span class="pre">milex-configuration</span></code><a class="headerlink" href="#milex-configuration" title="Link to this heading">#</a></h2>
+<p>‘milex-configuration’ is an app to configure machine settings and the directory
+structure where scripts, jobs, and various other things will be stored. When
+executed for the first time, it will create the configuration file
+‘~/.milexconfig’ if it does not exist, and you will be presented with the
+following file template</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;local&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/local/milex&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;env_command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;source /path/to/local/venv/bin/activate&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;slurm_account&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;def-bengioy&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;remote_machine&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/remote/milex&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;env_command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;source /path/to/remote/venv/bin/activate&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;slurm_account&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rrg-account_name&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;hostname&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;machine&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;hosturl&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;machine.domain.com&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user1&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;key_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;~/.ssh/id_rsa&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In what follows, we will explain the different fields in the configuration file.</p>
+<section id="local-machine">
+<h3>Local machine<a class="headerlink" href="#local-machine" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">local</span></code> is the name of the machine where you are currently running the
+<code class="docutils literal notranslate"><span class="pre">milex-configuration</span></code> command. It must always be present in the configuration
+file.</p>
+<section id="path">
+<h4><code class="docutils literal notranslate"><span class="pre">path</span></code><a class="headerlink" href="#path" title="Link to this heading">#</a></h4>
+<p>This field specifies the absolute path to a directory where scripts, jobs, and
+various other things will be stored for reproducibility. Once the configuration
+is complete, the following directory structure will be created automatically</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>├── jobs
+│   ├── *job_name*_*date*.json
+├── slurm
+│   ├── *script_name*_*date*.sh
+├── models
+├── results
+└── data
+</pre></div>
+</div>
+<p>Only the directories are created by <code class="docutils literal notranslate"><span class="pre">milex-configuration</span></code>. As you schedule jobs,
+the <code class="docutils literal notranslate"><span class="pre">jobs</span></code> directory will be populated with JSON files containing job
+information, and the <code class="docutils literal notranslate"><span class="pre">slurm</span></code> directory will be populated with SLURM shell
+scripts.</p>
+<p><strong>Notes</strong>:</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">*date*</span></code> is a timestamp automatically generated when a job is scheduled.
+The format is <code class="docutils literal notranslate"><span class="pre">YYYYmmDDHHMMSS</span></code>.</p></li>
+<li><p>In case multiple unique jobs are created simultaneously, timestamps are set
+one second in the future of each other to ensure uniqueness.</p></li>
+</ul>
+</section>
+<section id="env-command">
+<h4><code class="docutils literal notranslate"><span class="pre">env_command</span></code><a class="headerlink" href="#env-command" title="Link to this heading">#</a></h4>
+<p>This field is used to activate your Python virtual environment before running
+your jobs. If you are using <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code>, the command will look like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>/path/to/venv/bin/activate
+</pre></div>
+</div>
+<p>If you use <code class="docutils literal notranslate"><span class="pre">conda</span></code>, the command will look like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>myenv
+</pre></div>
+</div>
+<p>When SLURM shell script are automatically generated, the virtual environment is
+activated before running the job. Here is an example of an generated SLURM shell
+script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1"># SBATCH ...</span>
+
+<span class="c1"># Activate the virtual environment</span>
+<span class="nb">source</span><span class="w"> </span>/path/to/venv/bin/activate<span class="w"> </span><span class="c1"># Content of the `env_command` field</span>
+
+<span class="c1"># Run the job</span>
+python<span class="w"> </span>my_script
+</pre></div>
+</div>
+</section>
+<section id="slurm-account">
+<h4><code class="docutils literal notranslate"><span class="pre">slurm_account</span></code><a class="headerlink" href="#slurm-account" title="Link to this heading">#</a></h4>
+<p>This field specifies the SLURM account to use for job submission. Note that each
+machine receives a unique SLURM account. If you have multiple SLURM accounts on
+the same machine, you can create a new machine in the configuration file</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;local&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/local/milex&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;env_command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;source /path/to/local/venv/bin/activate&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;slurm_account&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;def-bengioy&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;local_rrg&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/local/milex&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;env_command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;source /path/to/local/venv/bin/activate&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;slurm_account&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rrg-bengioy&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="remote-machine">
+<h3>Remote machine<a class="headerlink" href="#remote-machine" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">remote_machine</span></code> field is optional and is used to specify the configuration
+details for a remote machine, which can be accessed via SSH protocols. If you
+don’t need this, you can remove the <code class="docutils literal notranslate"><span class="pre">remote_machine</span></code> field from the
+configuration file. <strong>Notes</strong>:</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">path</span></code> field must be an absolute path with respect to the remote machine.</p></li>
+</ul>
+<section id="hostname">
+<h4><code class="docutils literal notranslate"><span class="pre">hostname</span></code><a class="headerlink" href="#hostname" title="Link to this heading">#</a></h4>
+<p>This field specifies the hostname of a remote machine from the <code class="docutils literal notranslate"><span class="pre">~/.ssh/config</span></code>
+file. For more details on how to create an SSH config file, see the section
+<a class="reference internal" href="#config"><span class="std std-ref">Create an SSH config file</span></a>.</p>
+<p><strong>Note</strong>: This is the preferable way to specify the hostname of the remote
+machine. If provided, the other fields <code class="docutils literal notranslate"><span class="pre">hosturl</span></code>, <code class="docutils literal notranslate"><span class="pre">username</span></code>, and <code class="docutils literal notranslate"><span class="pre">key_path</span></code> are
+not required.</p>
+</section>
+<section id="username">
+<h4><code class="docutils literal notranslate"><span class="pre">username</span></code><a class="headerlink" href="#username" title="Link to this heading">#</a></h4>
+<p>This field specifies your username on the remote machine. For example, <code class="docutils literal notranslate"><span class="pre">user1</span></code>.</p>
+</section>
+<section id="hosturl">
+<h4><code class="docutils literal notranslate"><span class="pre">hosturl</span></code><a class="headerlink" href="#hosturl" title="Link to this heading">#</a></h4>
+<p>This field specifies the URL of the remote machine. For example,
+<code class="docutils literal notranslate"><span class="pre">machine.domain.com</span></code>.</p>
+</section>
+<section id="key-path">
+<h4><code class="docutils literal notranslate"><span class="pre">key_path</span></code><a class="headerlink" href="#key-path" title="Link to this heading">#</a></h4>
+<p>This field specifies the path to your SSH private key. For example,
+<code class="docutils literal notranslate"><span class="pre">~/.ssh/id_rsa</span></code>. See the section <a class="reference internal" href="#ssh"><span class="std std-ref">Creating an SSH Key</span></a> for instructions on
+how to create an SSH key.</p>
+</section>
+</section>
+</section>
+<section id="create-an-ssh-key">
+<span id="ssh"></span><h2>Create an SSH Key<a class="headerlink" href="#create-an-ssh-key" title="Link to this heading">#</a></h2>
+<p>If you do not have an SSH key for accessing remote machines, you will need to
+create one. In what follows, we details some of the steps to do so.</p>
+<section id="generate-an-ssh-key">
+<h3>Generate an SSH Key<a class="headerlink" href="#generate-an-ssh-key" title="Link to this heading">#</a></h3>
+<p>You can typically generate an SSH key using the <code class="docutils literal notranslate"><span class="pre">ssh-keygen</span></code> command. For
+example</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh-keygen<span class="w"> </span>-t<span class="w"> </span>rsa<span class="w"> </span>-b<span class="w"> </span><span class="m">4096</span><span class="w"> </span><span class="s2">&quot;your_email@example.com&quot;</span>
+</pre></div>
+</div>
+<p>You can find more information about the <code class="docutils literal notranslate"><span class="pre">ssh-keygen</span></code> command by running
+<code class="docutils literal notranslate"><span class="pre">man</span> <span class="pre">ssh-keygen</span></code> or visiting
+<a class="reference external" href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">this GitHub instruction page</a>
+for a walkthrough of the process.</p>
+<p>The key will be saved in the <code class="docutils literal notranslate"><span class="pre">~/.ssh</span></code> directory by default. If you chose the
+name <code class="docutils literal notranslate"><span class="pre">id_rsa</span></code> for the key, the private key will be saved in <code class="docutils literal notranslate"><span class="pre">~/.ssh/id_rsa</span></code> and
+the public key in <code class="docutils literal notranslate"><span class="pre">~/.ssh/id_rsa.pub</span></code>.</p>
+</section>
+<section id="link-an-ssh-key-to-the-remote-machine">
+<h3>Link an SSH Key to the remote machine<a class="headerlink" href="#link-an-ssh-key-to-the-remote-machine" title="Link to this heading">#</a></h3>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">ssh-copy-id</span></code> command to add your public key to the <code class="docutils literal notranslate"><span class="pre">authorized_keys</span></code>
+file on your remote machines.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh-copy-id<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_rsa.pub<span class="w"> </span>username@hostname
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">username</span></code> is your username on the remote machine and <code class="docutils literal notranslate"><span class="pre">hostname</span></code> is the hostname
+or IP address of the remote machine. With this setup, you should be able to
+connect to the remote machine without being prompted for a password.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh<span class="w"> </span>username@hostname
+</pre></div>
+</div>
+</section>
+</section>
+<section id="create-an-ssh-config-file-recommended">
+<span id="config"></span><h2>Create an SSH config file (recommended)<a class="headerlink" href="#create-an-ssh-config-file-recommended" title="Link to this heading">#</a></h2>
+<p>To simplify the SSH connection process even more, you can create an SSH config
+file at <code class="docutils literal notranslate"><span class="pre">~/.ssh/config</span></code> with the following content</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Host<span class="w"> </span>remote_machine
+<span class="w">    </span>HostName<span class="w"> </span>hostname
+<span class="w">    </span>User<span class="w"> </span>username
+<span class="w">    </span>IdentityFile<span class="w"> </span>~/.ssh/id_rsa
+</pre></div>
+</div>
+<p>With this, you can connect to the remote machine using the following command</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh<span class="w"> </span>remote_machine
+</pre></div>
+</div>
+<p>Similarly, you will only need to specify the <code class="docutils literal notranslate"><span class="pre">hostname</span></code> in your
+<code class="docutils literal notranslate"><span class="pre">milex-configuration</span></code> to connect to the remote machine.</p>
+<section id="dealing-with-2fa-authentication">
+<h3>Dealing with 2FA authentication<a class="headerlink" href="#dealing-with-2fa-authentication" title="Link to this heading">#</a></h3>
+<p>In case a 2FA protocol is enabled on the remote machine, you can add persistence
+to the ssh-agent to avoid prompting the 2FA authentication process every time
+you connect to the remote machine. Here is how you can modify the
+<code class="docutils literal notranslate"><span class="pre">~/.ssh/config</span></code> file</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Host<span class="w"> </span>remote_machine
+<span class="w">    </span>HostName<span class="w"> </span>hostname
+<span class="w">    </span>User<span class="w"> </span>username
+<span class="w">    </span>IdentityFile<span class="w"> </span>~/.ssh/id_rsa
+<span class="w">    </span>ServerAliveInterval<span class="w"> </span><span class="m">60</span>
+<span class="w">    </span>ControlMaster<span class="w"> </span>auto
+<span class="w">    </span>ControlPersist<span class="w"> </span>yes
+<span class="w">    </span>ControlPath<span class="w"> </span>~/.ssh/sockets/%r@%h-%p
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ServerAliveInterval</span> <span class="pre">60</span></code> will send a keep-alive signal to the server every 60
+seconds to keep the connection alive, keeping the connection open for a longer
+period of time. The <code class="docutils literal notranslate"><span class="pre">ControlMaster</span></code> and <code class="docutils literal notranslate"><span class="pre">ControlPersist</span></code> options are used to
+multiplex SSH connections, meaning that you can open multiple SSH sessions to
+the same server without having to re-authenticate each time.</p>
+<p>This configuration is <strong>highly recommended</strong> for remote machines that require
+2FA authentication. Especially if you plan submitting large bundles of jobs on
+the remote machine and don’t want to be bothered every time
+<code class="docutils literal notranslate"><span class="pre">milex-configuration</span></code> opens a new SSH connection to the remote machine.</p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="getting_started.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Getting started</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="register_an_application.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Register a script</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#milex-configuration"><code class="docutils literal notranslate"><span class="pre">milex-configuration</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#local-machine">Local machine</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#path"><code class="docutils literal notranslate"><span class="pre">path</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#env-command"><code class="docutils literal notranslate"><span class="pre">env_command</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#slurm-account"><code class="docutils literal notranslate"><span class="pre">slurm_account</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#remote-machine">Remote machine</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hostname"><code class="docutils literal notranslate"><span class="pre">hostname</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#username"><code class="docutils literal notranslate"><span class="pre">username</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hosturl"><code class="docutils literal notranslate"><span class="pre">hosturl</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#key-path"><code class="docutils literal notranslate"><span class="pre">key_path</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-an-ssh-key">Create an SSH Key</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-an-ssh-key">Generate an SSH Key</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#link-an-ssh-key-to-the-remote-machine">Link an SSH Key to the remote machine</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-an-ssh-config-file-recommended">Create an SSH config file (recommended)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dealing-with-2fa-authentication">Dealing with 2FA authentication</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Alexandre Adam
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
