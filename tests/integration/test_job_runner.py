@@ -139,7 +139,9 @@ def mock_load_config(monkeypatch, tmp_path):
     monkeypatch.setattr("milex_scheduler.run_slurm.load_config", lambda: mock_config)
     monkeypatch.setattr("milex_scheduler.utils.load_config", lambda: mock_config)
 
-    with patch("milex.load_config", return_value=mock_config) as mock_load_config:
+    with patch(
+        "milex_scheduler.load_config", return_value=mock_config
+    ) as mock_load_config:
         yield mock_load_config
 
 
