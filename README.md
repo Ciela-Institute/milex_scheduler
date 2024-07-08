@@ -100,7 +100,7 @@ milex-submit my-bundle
 **Notes**:
 
 - In case `--append` is not used, two bundles (each with a single job) are
-  created with unique timestamps. Only job2 would be submitted in the last
+  created, each with unique timestamps. Only job2 would be submitted in the last
   example.
 
 ### Schedule jobs with dependencies
