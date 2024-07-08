@@ -10,7 +10,9 @@ import os
 def mock_load_config(tmp_path):
     mock_config = {"local": {"path": tmp_path}}
     os.makedirs(tmp_path / "jobs", exist_ok=True)
-    with patch("load_config", return_value=mock_config) as mock_load_config:
+    with patch(
+        "milex_scheduler.load_config", return_value=mock_config
+    ) as mock_load_config:
         yield mock_load_config
 
 
