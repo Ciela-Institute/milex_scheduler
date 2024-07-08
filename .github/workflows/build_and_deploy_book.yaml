@@ -21,7 +21,7 @@ jobs:
         run: pip install jupyter-book
 
       - name: Install dependencies
-        run: pip install -r docs/requirements.txt
+        run: pip install -r docs_requirements.txt
 
       - name: Build Jupyter Book
         run: jupyter-book build docs
