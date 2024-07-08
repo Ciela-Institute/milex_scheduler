@@ -1,3 +1,4 @@
+[![Docs](https://readthedocs.org/projects/milex-scheduler/badge/?version=latest)](https://milex-scheduler.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gh/Ciela-Institute/milex_scheduler/graph/badge.svg?token=Pk5zRgoJCb)](https://codecov.io/gh/Ciela-Institute/milex_scheduler)
 
 # Milex-Scheduler
