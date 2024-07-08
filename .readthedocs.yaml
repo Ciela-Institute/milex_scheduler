@@ -5,15 +5,16 @@
 # Required
 version: 2
 
-formats: [html]
-
+# Set the OS, Python version and other tools you might need
 build:
-  image: latest
-
-  # Steps to build your Jupyter Book
+  os: ubuntu-22.04
+  tools:
+    python: "3.12"
+    # You can also specify other tool versions:
+    # nodejs: "19"
+    # rust: "1.64"
+    # golang: "1.19"
+    #
   steps:
     - pip install -r docs/requirements.txt
     - jupyter-book build docs
-
-python:
-  version: 3.11
