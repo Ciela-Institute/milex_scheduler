@@ -9,7 +9,7 @@ mock_job_name = "Test_Job"
 mock_jobs = {
     "JobA": {
         "name": "JobA",
-        "script": "run_job_a",
+        "script": "run-job-a",
         "dependencies": [],
         "slurm": {
             "tasks": 1,
@@ -22,14 +22,14 @@ mock_jobs = {
     },
     "JobB": {
         "name": "JobB",
-        "script": "run_job_b",
+        "script": "run-job-b",
         "dependencies": ["JobA"],
         "slurm": {"tasks": 1, "cpus_per_task": 2, "mem": "8G", "time": "02:00:00"},
         "args": {"param1": "value3", "param2": "value4"},
     },
     "JobC": {
         "name": "JobC",
-        "script": "run_job_c",
+        "script": "run-job-c",
         "dependencies": ["JobA", "JobB"],
         "slurm": {"tasks": 1, "cpus_per_task": 4, "mem": "16G", "time": "03:00:00"},
         "args": {"param1": "value5", "param2": "value6"},
@@ -52,7 +52,7 @@ expected_bundle_content = {
         "#SBATCH --time=01:00:00\n",
         'export MILEX="/path/to/remote"\n',
         "source /path/to/remote/venv/bin/activate\n",  # Environment activation command is added if provided
-        "run_job_a \\\n",
+        "run-job-a \\\n",
         "  --param1=value1 \\\n",
         "  --param2=value2\n",
     ],
@@ -67,7 +67,7 @@ expected_bundle_content = {
         "#SBATCH --time=02:00:00\n",
         'export MILEX="/path/to/remote"\n',
         "source /path/to/remote/venv/bin/activate\n",  # Environment activation command is added if provided
-        "run_job_b \\\n",
+        "run-job-b \\\n",
         "  --param1=value3 \\\n",
         "  --param2=value4\n",
     ],
@@ -83,7 +83,7 @@ expected_bundle_content = {
         'export MILEX="/path/to/remote"\n',  # Added automatically in every script
         "source /path/to/remote/venv/bin/activate\n",  # Environment activation command is added if provided
         "echo 'Starting Job C'\n",  # Pre-commands are added between the environment activation and the main command
-        "run_job_c \\\n",
+        "run-job-c \\\n",
         "  --param1=value5 \\\n",
         "  --param2=value6\n",
     ],
@@ -240,7 +240,7 @@ mock_jobs_error = {
 def test_integration_schedule_jobs_with_error(
     mock_run_script_remotely, mock_ssh_client, mock_machine_config, mock_load_config
 ):
-    with pytest.raises(ValueError):
+    with pytest.raises(KeyError):
         # Save the mock jobs to a JSON file
         save_bundle(mock_jobs_error, mock_job_name)
         submit_jobs(mock_job_name, machine_config=mock_machine_config)
