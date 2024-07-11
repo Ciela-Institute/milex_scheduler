@@ -18,21 +18,21 @@ mock_jobs = {
             "mem": "4G",
             "time": "01:00:00",
         },
-        "args": {"param1": "value1", "param2": "value2"},
+        "script_args": {"param1": "value1", "param2": "value2"},
     },
     "JobB": {
         "name": "JobB",
         "script": "run-job-b",
         "dependencies": ["JobA"],
         "slurm": {"tasks": 1, "cpus_per_task": 2, "mem": "8G", "time": "02:00:00"},
-        "args": {"param1": "value3", "param2": "value4"},
+        "script_args": {"param1": "value3", "param2": "value4"},
     },
     "JobC": {
         "name": "JobC",
         "script": "run-job-c",
         "dependencies": ["JobA", "JobB"],
         "slurm": {"tasks": 1, "cpus_per_task": 4, "mem": "16G", "time": "03:00:00"},
-        "args": {"param1": "value5", "param2": "value6"},
+        "script_args": {"param1": "value5", "param2": "value6"},
         "pre_commands": ["echo 'Starting Job C'"],
     },
 }
@@ -220,7 +220,7 @@ mock_jobs_error = {
             "mem": "4G",
             "time": "01:00:00",
         },
-        "args": {"param1": "value1", "param2": "value2"},
+        "script_args": {"param1": "value1", "param2": "value2"},
     },
 }
 
