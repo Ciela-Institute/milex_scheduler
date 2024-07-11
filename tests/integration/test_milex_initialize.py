@@ -8,7 +8,7 @@ import os
 @pytest.fixture
 def mock_parse_known_args():
     with patch("argparse.ArgumentParser.parse_args") as mock_parse_known_args:
-        mock_parse_known_args.return_value = Namespace(bundle_name="bundle_name")
+        mock_parse_known_args.return_value = Namespace(bundle="bundle_name")
         yield mock_parse_known_args
 
 
