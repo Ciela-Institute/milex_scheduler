@@ -46,10 +46,16 @@ def save_bundle(
             raise TypeError(
                 "Each job in the bundle must be a dictionary. If you want to save a single job, use save_job() instead."
             )
+        if "script" not in job:
+            raise KeyError(
+                "Each job in the bundle must minimally contain the 'script' entry to run an application"
+            )
 
     if append:
-        for name, job in bundle.items():
-            save_job(job, append=True)
+        for job_name, job in bundle.items():
+            if "name" not in job:
+                job["name"] = job_name
+            _, file_path = save_job(job, name, append=True)
     else:
         user_config = load_config()
         # Make sure a file with the same date does not exists, otherwise add 1 second to timestamp
@@ -65,12 +71,12 @@ def save_bundle(
             user_config["local"]["path"], "jobs", f"{name}_{date}.json"
         )
         # Make sure every job has a name
-        for name, job in bundle.items():
+        for job_name, job in bundle.items():
             if job.get("name", None) is None:
-                job["name"] = name
+                job["name"] = job_name
         with open(file_path, "w") as file:
             json.dump(bundle, file, indent=4)
-    print(f"Saved job bundle {name} to {file_path}")
+    print(f"Saved bundle {name} to {file_path}")
 
 
 def save_job(
@@ -100,13 +106,18 @@ def save_job(
     """
     user_config = load_config()
     job_dir = os.path.join(user_config["local"]["path"], "jobs")
-    try:  # Initialize job name
-        job_name = job["name"]
-    except KeyError:  # Update name with script name
-        job_name = job["script"]
-        job["name"] = job_name
+    if "script" not in job:
+        raise KeyError(
+            "Job configuration must minimally contain the 'script' entry to run an application"
+        )
+
+    if "name" not in job:  # If job does not have a name, use the script name
+        job["name"] = job["script"]
+    job_name = job["name"]
+
     if bundle_name is None:
         bundle_name = job_name
+
     if append:
         try:  # Save the job in existing bundle file
             # Load the job file
@@ -118,7 +129,7 @@ def save_job(
             if job_name in bundle:
                 i = 1
                 job_name = f"{job_name}_{i:03d}"
-                while job_name in job:
+                while job_name in bundle:
                     i += 1
                     job_name = f"{job_name[:-4]}_{i:03d}"
             job["name"] = job_name  # Update name of the job
@@ -149,7 +160,7 @@ def save_job(
     with open(file_path, "w") as file:
         json.dump(bundle, file, indent=4)
     print(f"Saved job {job_name} to {file_path}")
-    return job
+    return job, file_path
 
 
 def transfer_slurm_to_remote(

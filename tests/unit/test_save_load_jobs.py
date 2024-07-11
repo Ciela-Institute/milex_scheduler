@@ -97,7 +97,7 @@ def test_nearest_bundle_file(tmp_path, mock_load_config):
 
 def test_save_job_success(tmp_path, mock_load_config):
     bundle_name = "test_job"
-    mock_jobs = {"Job1": {}, "Job2": {}}
+    mock_jobs = {"Job1": {"script": "run-job-1"}, "Job2": {"script": "run-job-2"}}
     now = datetime.now()
 
     # Set custom user_config path to tmp_path
@@ -117,9 +117,9 @@ def test_save_job_success(tmp_path, mock_load_config):
 def test_save_load_job(tmp_path, mock_load_config):
     # Prepare mock data
     mock_data = {
-        "JobA": {"dependencies": []},
-        "JobB": {"dependencies": ["JobA"]},
-        "JobC": {"dependencies": ["JobA", "JobB"]},
+        "JobA": {"dependencies": [], "script": "run-joba"},
+        "JobB": {"dependencies": ["JobA"], "script": "run-jobb"},
+        "JobC": {"dependencies": ["JobA", "JobB"], "script": "run-jobc"},
     }
     bundle_name = "dummy_bundle"
 
@@ -140,9 +140,9 @@ def test_save_load_job(tmp_path, mock_load_config):
 def test_load_job_topological_sorting(tmp_path, mock_load_config):
     # Prepare mock data
     mock_data = {
-        "JobA": {"dependencies": ["JobB"]},
-        "JobB": {"dependencies": []},
-        "JobC": {"dependencies": ["JobA", "JobB"]},
+        "JobA": {"dependencies": ["JobB"], "script": "run-joba"},
+        "JobB": {"dependencies": [], "script": "run-jobb"},
+        "JobC": {"dependencies": ["JobA", "JobB"], "script": "run-jobc"},
     }
     bundle_name = "dummy_bundle"
 
@@ -173,8 +173,8 @@ def test_load_job_file_not_found(tmp_path, mock_load_config):
 
 
 def test_save_append_jobs_to_bundle(tmp_path, mock_load_config):
-    mock_jobA = {"name": "JobA", "dependencies": []}
-    mock_jobB = {"name": "JobB", "dependencies": ["JobA"]}
+    mock_jobA = {"name": "JobA", "dependencies": [], "script": "run-joba"}
+    mock_jobB = {"name": "JobB", "dependencies": ["JobA"], "script": "run-jobb"}
     bundle_name = "dummy_bundle"
 
     # Save jobA
@@ -196,6 +196,51 @@ def test_save_append_jobs_to_bundle(tmp_path, mock_load_config):
     assert jobs[1]["name"] == "JobB"
 
 
+def test_save_append_job_to_bundle_with_same_name(tmp_path, mock_load_config):
+    mock_jobA = {"name": "JobA", "script": "run-joba"}
+    mock_jobB = {"name": "JobA", "script": "run-joba"}
+    mock_jobC = {"name": "JobA", "script": "run-joba"}
+    bundle_name = "dummy_bundle"
+
+    # Save jobA
+    save_job(mock_jobA, bundle_name)
+
+    # Append jobB to the same bundle
+    save_job(mock_jobB, bundle_name, append=True)
+    save_job(mock_jobC, bundle_name, append=True)
+
+    # Load the bundle
+    jobs, dependencies, date = load_bundle(bundle_name)
+
+    print("Jobs", jobs)
+    print("Dependency graph", dependencies)
+
+    assert len(jobs) == 3
+    assert len(dependencies) == 3
+    assert "JobA" in [job["name"] for job in jobs]
+    assert "JobA_001" in [job["name"] for job in jobs]
+    assert "JobA_002" in [job["name"] for job in jobs]
+
+
+def test_save_jobs_append_with_same_name(tmp_path, mock_load_config):
+    bundle_a = {"JobA": {"script": "run-joba"}, "JobB": {"script": "run-jobb"}}
+    bundle_b = {"JobA": {"script": "run-joba"}, "JobB": {"script": "run-jobb"}}
+
+    bundle_name = "dummy_bundle"
+    save_bundle(bundle_a, bundle_name)
+    save_bundle(bundle_b, bundle_name, append=True)
+
+    jobs, dependencies, date = load_bundle(bundle_name)
+
+    assert len(jobs) == 4
+    assert len(dependencies) == 4
+    assert "JobA" in [job["name"] for job in jobs]
+    assert "JobB" in [job["name"] for job in jobs]
+    assert "JobA_001" in [job["name"] for job in jobs]
+    assert "JobB_001" in [job["name"] for job in jobs]
+    assert dependencies == {"JobA": [], "JobB": [], "JobA_001": [], "JobB_001": []}
+
+
 def test_save_bundle_type_error(mock_load_config):
     # test bundle not a dict
     bundle_name = "mock"
@@ -208,10 +253,18 @@ def test_save_bundle_type_error(mock_load_config):
         save_bundle(bundle, bundle_name)
 
 
+def test_save_bundle_no_script_error(mock_load_config):
+    # test bundle not a dict
+    bundle_name = "mock"
+    bundle = {"JobA": {"dependencies": []}}
+    with pytest.raises(KeyError):
+        save_bundle(bundle, bundle_name)
+
+
 def test_save_job_with_same_name_in_append_mode(mock_load_config):
     # Check that new bundle is created with an index appended
-    mock_jobA = {"name": "JobA", "dependencies": []}
-    mock_jobB = {"name": "JobA", "dependencies": []}
+    mock_jobA = {"name": "JobA", "script": "run-joba"}
+    mock_jobB = {"name": "JobA", "script": "run-joba"}
     bundle_name = "dummy_bundle"
 
     # Save jobA
