@@ -19,7 +19,7 @@ def test_write_slurm_content(mock_load_config):
     job = {
         "name": "test_job",
         "slurm": {"time": "01:00:00", "partition": "test-partition", "array": "1-10%6"},
-        "args": {"arg1": "value1", "arg2": [1, 2, 3]},
+        "script_args": {"arg1": "value1", "arg2": [1, 2, 3]},
         "script": "test-application",
     }
     file = StringIO()
@@ -48,7 +48,7 @@ def test_write_slurm_boolean_flag(conditional_flag, expected_line, mock_load_con
     job = {
         "name": "boolean_flag_test",
         "slurm": {},
-        "args": {"conditional": conditional_flag},
+        "script_args": {"conditional": conditional_flag},
         "script": "test-boolean-application",
     }
     file = StringIO()
@@ -68,7 +68,7 @@ def test_write_slurm_with_none_value(mock_load_config):
     job = {
         "name": "none_value_test",
         "slurm": {},
-        "args": {"arg_with_none": None},  # Test handling None value
+        "script_args": {"arg_with_none": None},  # Test handling None value
         "script": "test-none-application",
     }
     file = StringIO()
@@ -88,7 +88,7 @@ def test_write_slurm_with_pre_commands_and_env_command(mock_load_config):
     job = {
         "name": "pre_commands_test",
         "slurm": {},
-        "args": {},
+        "script_args": {},
         "script": "test-pre-commands-application",
         "pre_commands": ["module load python", "module load cuda"],
     }
@@ -110,7 +110,7 @@ def test_write_slurm_output_dir_customization(mock_load_config):
     job = {
         "name": "output_dir_test",
         "slurm": {"output": "custom-output-%j.txt"},
-        "args": {},
+        "script_args": {},
         "script": "test-output-dir-application",
     }
     file = StringIO()

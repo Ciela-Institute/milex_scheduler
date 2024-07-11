@@ -10,9 +10,9 @@ __all__ = ["create_slurm_script"]
 def create_slurm_script(job: dict, date: datetime, machine_config: dict) -> str:
     """Creates a SLURM script and saves it locally"""
     user_settings = load_config()
-    path = os.path.join(user_settings['local']['path'], "slurm")
+    path = os.path.join(user_settings["local"]["path"], "slurm")
     slurm_name = name_slurm_script(job, date)
-    with open(os.path.join(path, slurm_name), 'w') as f:
+    with open(os.path.join(path, slurm_name), "w") as f:
         write_slurm_content(f, job, machine_config)
     print(f"Saved SLURM script for job {job['name']} saved to {path}")
     return slurm_name
@@ -22,21 +22,21 @@ def write_slurm_content(file: TextIOWrapper, job: dict, machine_config: dict) ->
     """
     Writes the content of the SLURM script with formatted arguments, handling list arguments differently based on their type.
     """
-    env_command = machine_config.get('env_command', '')
-    slurm_account = machine_config.get('slurm_account', '')
+    env_command = machine_config.get("env_command", "")
+    slurm_account = machine_config.get("slurm_account", "")
 
     file.write("#!/bin/bash\n")
     if slurm_account:
         file.write(f"#SBATCH --account={slurm_account}\n")
-    output_dir = os.path.join(machine_config['path'], "slurm")
+    output_dir = os.path.join(machine_config["path"], "slurm")
     file.write(f"#SBATCH --output={os.path.join(output_dir, '%x-%j.out')}\n")
     file.write(f"#SBATCH --job-name={job['name']}\n")
 
     # SLURM directives
-    for key, value in job['slurm'].items():
+    for key, value in job["slurm"].items():
         if value is not None:
             file.write(f"#SBATCH --{key.replace('_', '-')}={value}\n")
-    
+
     # Make sure path is exported to environment
     file.write(f"export MILEX=\"{machine_config['path']}\"\n")
 
@@ -50,11 +50,9 @@ def write_slurm_content(file: TextIOWrapper, job: dict, machine_config: dict) ->
 
     # Main command and arguments
     file.write(f"{job['script']} \\\n")
-    args_keys = list(job['args'].keys())
-    if args_keys:
-        last_arg = args_keys[-1]  # Get the last argument key in case there are arguments
+    job_args = job.get("script_args", {})
 
-    for k, v in job['args'].items():
+    for i, (k, v) in enumerate(job_args.items()):
         if v is None:
             continue
         if isinstance(v, bool):
@@ -71,9 +69,8 @@ def write_slurm_content(file: TextIOWrapper, job: dict, machine_config: dict) ->
         else:
             arg_line = f"  --{k}={v}"
 
-        if k != last_arg:
+        if i < len(job_args) - 1:
             arg_line += " \\\n"
         else:
             arg_line += "\n"
         file.write(arg_line)
- 
