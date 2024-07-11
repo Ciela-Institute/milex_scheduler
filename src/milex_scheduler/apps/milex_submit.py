@@ -52,15 +52,6 @@ def parse_args():
     return parser.parse_args()
 
 
-def cli():
-    import sys
-    import json
-
-    args = parse_args()
-    print(json.dumps(vars(args), indent=4))
-    sys.exit(0)
-
-
 def main():
     args = parse_args()
     config = machine_config(args)

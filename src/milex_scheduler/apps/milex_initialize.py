@@ -11,17 +11,6 @@ def parse_args():
     return args
 
 
-def cli():
-    import sys
-    import json
-
-    args, script_args = parse_args()
-    if script_args is None:
-        sys.exit(1)
-    print(json.dumps(vars(args), indent=4))
-    sys.exit(0)
-
-
 def main():
     args = parse_args()
     save_bundle({}, args.bundle)
