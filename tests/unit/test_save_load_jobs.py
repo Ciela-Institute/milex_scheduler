@@ -261,6 +261,11 @@ def test_save_bundle_no_script_error(mock_load_config):
         save_bundle(bundle, bundle_name)
 
 
+def test_save_bundle_initialize(mock_load_config):
+    bundle_name = "mock"
+    save_bundle({}, bundle_name)
+
+
 def test_save_job_with_same_name_in_append_mode(mock_load_config):
     # Check that new bundle is created with an index appended
     mock_jobA = {"name": "JobA", "script": "run-joba"}
