@@ -15,6 +15,10 @@ shell scripts and provides the following features:
 - Dependency between jobs managed using names instead of SLURM specific job IDs
 - Submitting jobs remotely across SSH connections
 
+## Documentation
+
+You can gind the full documentation [here](https://milex-scheduler.readthedocs.io/en/latest/).
+
 ## Installation
 
 ### Install the `milex-scheduler` package
