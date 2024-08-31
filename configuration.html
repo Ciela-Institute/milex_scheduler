@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -362,7 +362,7 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-an-ssh-config-file-recommended">Create an SSH config file (recommended)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dealing-with-2fa-authentication">Dealing with 2FA authentication</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fa-authentication">2FA authentication</a></li>
 </ul>
 </li>
 </ul>
@@ -378,27 +378,28 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="configuration">
 <h1>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">#</a></h1>
-<p>This document provides detailed instructions for the <code class="docutils literal notranslate"><span class="pre">milex-configuration</span></code>
-command. This step abstracts away user specific information like</p>
+<p>This document provides detailed instructions for the <code class="docutils literal notranslate"><span class="pre">milex-configuration</span></code> command.
+The role of this command is to store user-specific details required to connect to
+remote SLURM machines and activate virtual environments.
+This document includes the steps to create an SSH key and securely access remote
+machines. See <a class="reference internal" href="#ssh"><span class="std std-ref">Creating an SSH Key</span></a>.</p>
+<p>The configuration file <code class="docutils literal notranslate"><span class="pre">~/.milexconfig</span></code> stores the following information:</p>
 <ul class="simple">
-<li><p>SLURM account information (e.g. <code class="docutils literal notranslate"><span class="pre">def-bengioy</span></code>)</p></li>
+<li><p>SLURM account (e.g. <code class="docutils literal notranslate"><span class="pre">def-bengioy</span></code>)</p></li>
 <li><p>Virtual environment activation commands (e.g.
 <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">/path/to/remote/venv/bin/activate</span></code>)</p></li>
 <li><p>SSH credentials for remote machines</p></li>
 </ul>
-<p>This document includes steps for creating an SSH key to securely access remote
-machines in the section <a class="reference internal" href="#ssh"><span class="std std-ref">Creating an SSH Key</span></a>. To get started with the
-configuration, run this command in a command-line interface:</p>
+<p>To get started with the configuration, run this command in a command-line interface:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>milex-configuration
 </pre></div>
 </div>
 <section id="milex-configuration">
 <h2><code class="docutils literal notranslate"><span class="pre">milex-configuration</span></code><a class="headerlink" href="#milex-configuration" title="Link to this heading">#</a></h2>
-<p>‘milex-configuration’ is an app to configure machine settings and the directory
-structure where scripts, jobs, and various other things will be stored. When
-executed for the first time, it will create the configuration file
-‘~/.milexconfig’ if it does not exist, and you will be presented with the
-following file template</p>
+<p>When executed for the first time, <code class="docutils literal notranslate"><span class="pre">milex-configuration</span></code>
+will create the configuration file ‘~/.milexconfig’ if it does not exist.
+The <code class="docutils literal notranslate"><span class="pre">~</span></code> is used as a shortcut for the home directory.
+You should also be presented with the following file template</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;local&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/local/milex&quot;</span><span class="p">,</span>
@@ -417,7 +418,19 @@ following file template</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>In what follows, we will explain the different fields in the configuration file.</p>
+<p>In the following sections, each field of this file is explained in
+case you need to modify it. If you only need a local machine and
+do not plan to use a remote machine, you will only need to configure
+entries under the <code class="docutils literal notranslate"><span class="pre">local</span></code> field or similar to it.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;local&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/local/milex&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;env_command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;source /path/to/local/venv/bin/activate&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;slurm_account&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;def-bengioy&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <section id="local-machine">
 <h3>Local machine<a class="headerlink" href="#local-machine" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">local</span></code> is the name of the machine where you are currently running the
@@ -428,8 +441,9 @@ file.</p>
 <p>This field specifies the absolute path to a directory where scripts, jobs, and
 various other things will be stored for reproducibility. Once the configuration
 is complete, the following directory structure will be created automatically</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>├── jobs
-│   ├── *job_name*_*date*.json
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$MILEX
+├── jobs
+│   ├── *bundle_name*_*date*.json
 ├── slurm
 │   ├── *script_name*_*date*.sh
 ├── models
@@ -437,22 +451,25 @@ is complete, the following directory structure will be created automatically</p>
 └── data
 </pre></div>
 </div>
-<p>Only the directories are created by <code class="docutils literal notranslate"><span class="pre">milex-configuration</span></code>. As you schedule jobs,
-the <code class="docutils literal notranslate"><span class="pre">jobs</span></code> directory will be populated with JSON files containing job
-information, and the <code class="docutils literal notranslate"><span class="pre">slurm</span></code> directory will be populated with SLURM shell
-scripts.</p>
+<p><code class="docutils literal notranslate"><span class="pre">$MILEX</span></code> is an environment variable automatically appended to your <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code> file
+by <code class="docutils literal notranslate"><span class="pre">milex-configuration</span></code> using the path specified in the <code class="docutils literal notranslate"><span class="pre">path</span></code> field.</p>
+<p>As jobs are scheduled , the <code class="docutils literal notranslate"><span class="pre">jobs</span></code> directory will be populated with
+JSON files that store job configurations.
+The <code class="docutils literal notranslate"><span class="pre">slurm</span></code> directory is populated once jobs are submitted with the corresponding
+SLURM shell automatically generated by <code class="docutils literal notranslate"><span class="pre">milex</span></code> and output files created by SLURM.</p>
 <p><strong>Notes</strong>:</p>
 <ul class="simple">
-<li><p>The <code class="docutils literal notranslate"><span class="pre">*date*</span></code> is a timestamp automatically generated when a job is scheduled.
+<li><p><code class="docutils literal notranslate"><span class="pre">*date*</span></code> is a timestamp automatically generated when a job is scheduled.
 The format is <code class="docutils literal notranslate"><span class="pre">YYYYmmDDHHMMSS</span></code>.</p></li>
-<li><p>In case multiple unique jobs are created simultaneously, timestamps are set
-one second in the future of each other to ensure uniqueness.</p></li>
+<li><p>In case multiple jobs are created simultaneously with the same name,
+<code class="docutils literal notranslate"><span class="pre">milex</span></code> will append a unique timestamp to each by adding seconds to the
+timestamp.</p></li>
 </ul>
 </section>
 <section id="env-command">
 <h4><code class="docutils literal notranslate"><span class="pre">env_command</span></code><a class="headerlink" href="#env-command" title="Link to this heading">#</a></h4>
-<p>This field is used to activate your Python virtual environment before running
-your jobs. If you are using <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code>, the command will look like this:</p>
+<p>This field is used to activate a Python virtual environment before running jobs.
+If you are using <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code>, the command will look like this:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>/path/to/venv/bin/activate
 </pre></div>
 </div>
@@ -460,9 +477,8 @@ your jobs. If you are using <code class="docutils literal notranslate"><span cla
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>myenv
 </pre></div>
 </div>
-<p>When SLURM shell script are automatically generated, the virtual environment is
-activated before running the job. Here is an example of an generated SLURM shell
-script:</p>
+<p>The virtual environment is always activated before running the job.
+SLURM script generated by <code class="docutils literal notranslate"><span class="pre">milex</span></code> have this generic structure:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="c1"># SBATCH ...</span>
 
@@ -476,9 +492,11 @@ python<span class="w"> </span>my_script
 </section>
 <section id="slurm-account">
 <h4><code class="docutils literal notranslate"><span class="pre">slurm_account</span></code><a class="headerlink" href="#slurm-account" title="Link to this heading">#</a></h4>
-<p>This field specifies the SLURM account to use for job submission. Note that each
-machine receives a unique SLURM account. If you have multiple SLURM accounts on
-the same machine, you can create a new machine in the configuration file</p>
+<p>This field specifies the SLURM account for job submission.
+Each machine should have a unique SLURM account.
+If you have multiple SLURM accounts on the same machine,
+then you can create multiple configurations in the <code class="docutils literal notranslate"><span class="pre">~/.milexconfig</span></code> file
+to use the various accounts.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;local&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/local/milex&quot;</span><span class="p">,</span>
@@ -497,10 +515,10 @@ the same machine, you can create a new machine in the configuration file</p>
 </section>
 <section id="remote-machine">
 <h3>Remote machine<a class="headerlink" href="#remote-machine" title="Link to this heading">#</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">remote_machine</span></code> field is optional and is used to specify the configuration
-details for a remote machine, which can be accessed via SSH protocols. If you
-don’t need this, you can remove the <code class="docutils literal notranslate"><span class="pre">remote_machine</span></code> field from the
-configuration file. <strong>Notes</strong>:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">remote_machine</span></code> field is optional.
+It is used to specify the configuration details for a remote machine,
+i.e. a machine accessible via SSH protocols.</p>
+<p><strong>Notes</strong>:</p>
 <ul class="simple">
 <li><p>The <code class="docutils literal notranslate"><span class="pre">path</span></code> field must be an absolute path with respect to the remote machine.</p></li>
 </ul>
@@ -515,50 +533,45 @@ not required.</p>
 </section>
 <section id="username">
 <h4><code class="docutils literal notranslate"><span class="pre">username</span></code><a class="headerlink" href="#username" title="Link to this heading">#</a></h4>
-<p>This field specifies your username on the remote machine. For example, <code class="docutils literal notranslate"><span class="pre">user1</span></code>.</p>
+<p>This field specifies a username to access an account on the remote machine.</p>
 </section>
 <section id="hosturl">
 <h4><code class="docutils literal notranslate"><span class="pre">hosturl</span></code><a class="headerlink" href="#hosturl" title="Link to this heading">#</a></h4>
 <p>This field specifies the URL of the remote machine. For example,
-<code class="docutils literal notranslate"><span class="pre">machine.domain.com</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">beluga.computecanada.ca</span></code>.</p>
 </section>
 <section id="key-path">
 <h4><code class="docutils literal notranslate"><span class="pre">key_path</span></code><a class="headerlink" href="#key-path" title="Link to this heading">#</a></h4>
-<p>This field specifies the path to your SSH private key. For example,
-<code class="docutils literal notranslate"><span class="pre">~/.ssh/id_rsa</span></code>. See the section <a class="reference internal" href="#ssh"><span class="std std-ref">Creating an SSH Key</span></a> for instructions on
+<p>This field specifies the path to the SSH private key used to connect to the machine.
+For example, <code class="docutils literal notranslate"><span class="pre">~/.ssh/id_rsa</span></code>. See the section <a class="reference internal" href="#ssh"><span class="std std-ref">Creating an SSH Key</span></a> for instructions on
 how to create an SSH key.</p>
 </section>
 </section>
 </section>
 <section id="create-an-ssh-key">
 <span id="ssh"></span><h2>Create an SSH Key<a class="headerlink" href="#create-an-ssh-key" title="Link to this heading">#</a></h2>
-<p>If you do not have an SSH key for accessing remote machines, you will need to
-create one. In what follows, we details some of the steps to do so.</p>
 <section id="generate-an-ssh-key">
 <h3>Generate an SSH Key<a class="headerlink" href="#generate-an-ssh-key" title="Link to this heading">#</a></h3>
-<p>You can typically generate an SSH key using the <code class="docutils literal notranslate"><span class="pre">ssh-keygen</span></code> command. For
-example</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh-keygen<span class="w"> </span>-t<span class="w"> </span>rsa<span class="w"> </span>-b<span class="w"> </span><span class="m">4096</span><span class="w"> </span><span class="s2">&quot;your_email@example.com&quot;</span>
+<p>An SSH key is generated using the <code class="docutils literal notranslate"><span class="pre">ssh-keygen</span></code> command. For example</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh-keygen<span class="w"> </span>-t<span class="w"> </span>rsa<span class="w"> </span>-b<span class="w"> </span><span class="m">4096</span><span class="w"> </span><span class="s2">&quot;my_email@example.com&quot;</span>
 </pre></div>
 </div>
 <p>You can find more information about the <code class="docutils literal notranslate"><span class="pre">ssh-keygen</span></code> command by running
-<code class="docutils literal notranslate"><span class="pre">man</span> <span class="pre">ssh-keygen</span></code> or visiting
-<a class="reference external" href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">this GitHub instruction page</a>
-for a walkthrough of the process.</p>
-<p>The key will be saved in the <code class="docutils literal notranslate"><span class="pre">~/.ssh</span></code> directory by default. If you chose the
-name <code class="docutils literal notranslate"><span class="pre">id_rsa</span></code> for the key, the private key will be saved in <code class="docutils literal notranslate"><span class="pre">~/.ssh/id_rsa</span></code> and
-the public key in <code class="docutils literal notranslate"><span class="pre">~/.ssh/id_rsa.pub</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">man</span> <span class="pre">ssh-keygen</span></code> or visiting <a class="reference external" href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">this GitHub instruction page</a>
+for a walkthrough of the process.
+The key will be saved in the <code class="docutils literal notranslate"><span class="pre">~/.ssh</span></code> directory by default.
+The public key can be distinguished by the <code class="docutils literal notranslate"><span class="pre">.pub</span></code> extension from
+the private key.</p>
 </section>
 <section id="link-an-ssh-key-to-the-remote-machine">
 <h3>Link an SSH Key to the remote machine<a class="headerlink" href="#link-an-ssh-key-to-the-remote-machine" title="Link to this heading">#</a></h3>
-<p>Use the <code class="docutils literal notranslate"><span class="pre">ssh-copy-id</span></code> command to add your public key to the <code class="docutils literal notranslate"><span class="pre">authorized_keys</span></code>
-file on your remote machines.</p>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">ssh-copy-id</span></code> command to register the public key in the <code class="docutils literal notranslate"><span class="pre">authorized_keys</span></code>
+file on the remote machines.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh-copy-id<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_rsa.pub<span class="w"> </span>username@hostname
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">username</span></code> is your username on the remote machine and <code class="docutils literal notranslate"><span class="pre">hostname</span></code> is the hostname
-or IP address of the remote machine. With this setup, you should be able to
-connect to the remote machine without being prompted for a password.</p>
+<p>With this setup, you will not be prompted for a password when connecting to the
+remote machine.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh<span class="w"> </span>username@hostname
 </pre></div>
 </div>
@@ -566,26 +579,25 @@ connect to the remote machine without being prompted for a password.</p>
 </section>
 <section id="create-an-ssh-config-file-recommended">
 <span id="config"></span><h2>Create an SSH config file (recommended)<a class="headerlink" href="#create-an-ssh-config-file-recommended" title="Link to this heading">#</a></h2>
-<p>To simplify the SSH connection process even more, you can create an SSH config
-file at <code class="docutils literal notranslate"><span class="pre">~/.ssh/config</span></code> with the following content</p>
+<p>To simplify the SSH connection process even more, a config
+file can be created as follows <code class="docutils literal notranslate"><span class="pre">touch</span> <span class="pre">~/.ssh/config</span></code>.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Host<span class="w"> </span>remote_machine
 <span class="w">    </span>HostName<span class="w"> </span>hostname
 <span class="w">    </span>User<span class="w"> </span>username
 <span class="w">    </span>IdentityFile<span class="w"> </span>~/.ssh/id_rsa
 </pre></div>
 </div>
-<p>With this, you can connect to the remote machine using the following command</p>
+<p>The name of the host <code class="docutils literal notranslate"><span class="pre">remote_machine</span></code>, is now associated with the full
+SSH configuration, such that you can connect to the remote machine by running</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh<span class="w"> </span>remote_machine
 </pre></div>
 </div>
-<p>Similarly, you will only need to specify the <code class="docutils literal notranslate"><span class="pre">hostname</span></code> in your
-<code class="docutils literal notranslate"><span class="pre">milex-configuration</span></code> to connect to the remote machine.</p>
-<section id="dealing-with-2fa-authentication">
-<h3>Dealing with 2FA authentication<a class="headerlink" href="#dealing-with-2fa-authentication" title="Link to this heading">#</a></h3>
-<p>In case a 2FA protocol is enabled on the remote machine, you can add persistence
-to the ssh-agent to avoid prompting the 2FA authentication process every time
-you connect to the remote machine. Here is how you can modify the
-<code class="docutils literal notranslate"><span class="pre">~/.ssh/config</span></code> file</p>
+<p>You can use this name also in the <code class="docutils literal notranslate"><span class="pre">~/.milexconfig</span></code> file to specify the hostname
+field.</p>
+<section id="fa-authentication">
+<h3>2FA authentication<a class="headerlink" href="#fa-authentication" title="Link to this heading">#</a></h3>
+<p>In case a 2FA protocol is enabled on the remote machine, persistence can be added
+to the ssh-agent to avoid prompting the 2FA authentication process</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Host<span class="w"> </span>remote_machine
 <span class="w">    </span>HostName<span class="w"> </span>hostname
 <span class="w">    </span>User<span class="w"> </span>username
@@ -597,14 +609,13 @@ you connect to the remote machine. Here is how you can modify the
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">ServerAliveInterval</span> <span class="pre">60</span></code> will send a keep-alive signal to the server every 60
-seconds to keep the connection alive, keeping the connection open for a longer
-period of time. The <code class="docutils literal notranslate"><span class="pre">ControlMaster</span></code> and <code class="docutils literal notranslate"><span class="pre">ControlPersist</span></code> options are used to
+seconds to keep the connection alive.
+The <code class="docutils literal notranslate"><span class="pre">ControlMaster</span></code> and <code class="docutils literal notranslate"><span class="pre">ControlPersist</span></code> options are used to
 multiplex SSH connections, meaning that you can open multiple SSH sessions to
 the same server without having to re-authenticate each time.</p>
 <p>This configuration is <strong>highly recommended</strong> for remote machines that require
-2FA authentication. Especially if you plan submitting large bundles of jobs on
-the remote machine and don’t want to be bothered every time
-<code class="docutils literal notranslate"><span class="pre">milex-configuration</span></code> opens a new SSH connection to the remote machine.</p>
+2FA authentication. It is especially useful when you have multiple jobs to run on
+a remote machine.</p>
 </section>
 </section>
 </section>
@@ -695,7 +706,7 @@ the remote machine and don’t want to be bothered every time
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-an-ssh-config-file-recommended">Create an SSH config file (recommended)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dealing-with-2fa-authentication">Dealing with 2FA authentication</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fa-authentication">2FA authentication</a></li>
 </ul>
 </li>
 </ul>

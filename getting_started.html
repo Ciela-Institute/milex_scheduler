@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -351,6 +351,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#submit-a-job">Submit a job</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#schedule-multiple-jobs">Schedule multiple jobs</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#schedule-jobs-with-dependencies">Schedule jobs with dependencies</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pre-commands">Pre-commands</a></li>
 </ul>
 </li>
 </ul>
@@ -475,6 +476,30 @@ topological order before submission.</p>
 </li>
 </ul>
 </section>
+<section id="pre-commands">
+<h3>Pre-commands<a class="headerlink" href="#pre-commands" title="Link to this heading">#</a></h3>
+<p>Commands like copying files or creating directories can be
+executed before the python script by using the <code class="docutils literal notranslate"><span class="pre">--pre-command</span></code> argument when scheduling a job.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>milex-schedule<span class="w"> </span>my-script<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--pre-command<span class="w"> </span><span class="s2">&quot;mkdir -p /path/to/my/directory&quot;</span>
+<span class="w">    </span>...
+</pre></div>
+</div>
+<p>Multiple pre-commands are provided by separating them with a semicolon</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>milex-schedule<span class="w"> </span>my-script<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--pre-command<span class="w"> </span><span class="s2">&quot;mkdir -p /path/to/my/directory; cp /path/to/my/file /path/to/my/directory&quot;</span>
+<span class="w">    </span>...
+</pre></div>
+</div>
+<p>Or separating them with a space</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>milex-schedule<span class="w"> </span>my-script<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--pre-command<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s2">&quot;mkdir -p /path/to/my/directory&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s2">&quot;cp /path/to/my/file /path/to/my/directory&quot;</span><span class="se">\</span>
+<span class="w">    </span>...
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -553,6 +578,7 @@ topological order before submission.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#submit-a-job">Submit a job</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#schedule-multiple-jobs">Schedule multiple jobs</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#schedule-jobs-with-dependencies">Schedule jobs with dependencies</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pre-commands">Pre-commands</a></li>
 </ul>
 </li>
 </ul>

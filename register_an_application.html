@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -339,15 +339,11 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#script-structure">Script Structure</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#main"><code class="docutils literal notranslate"><span class="pre">main</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-package">Creating a Package</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registering-a-script-in-pyproject-toml">Registering a Script in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-main-and-cli-functions">The <code class="docutils literal notranslate"><span class="pre">main</span></code> and <code class="docutils literal notranslate"><span class="pre">cli</span></code> Functions</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parse-args"><code class="docutils literal notranslate"><span class="pre">parse_args</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cli"><code class="docutils literal notranslate"><span class="pre">cli()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#register-your-script">Register your Script</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-package">Create a Package</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#register-the-script-in-pyproject-toml">Register the Script in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#main"><code class="docutils literal notranslate"><span class="pre">main</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -363,76 +359,18 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="register-a-script">
 <h1>Register a script<a class="headerlink" href="#register-a-script" title="Link to this heading">#</a></h1>
-<p>In order to schedule and submit your scripts, you will have to construct your
-script with a specific structure. You will also need to register them in your
-package’s <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file in order for <code class="docutils literal notranslate"><span class="pre">milex-schedule</span></code> to be able to be
-able to run them.</p>
-<section id="script-structure">
-<h2>Script Structure<a class="headerlink" href="#script-structure" title="Link to this heading">#</a></h2>
-<p>A script must be populated with 3 functions, namely <code class="docutils literal notranslate"><span class="pre">main()</span></code>, <code class="docutils literal notranslate"><span class="pre">parse_args()</span></code> and
-<code class="docutils literal notranslate"><span class="pre">cli()</span></code>. The advantage of this structure is that <code class="docutils literal notranslate"><span class="pre">cli()</span></code>, a crucial function for
-scheduling and running your script, will always be identical. This allows you to
-copy paste <code class="docutils literal notranslate"><span class="pre">cli()</span></code> into all your scripts without modification.</p>
-<p>Below, we detail the design principles of <code class="docutils literal notranslate"><span class="pre">main()</span></code>, <code class="docutils literal notranslate"><span class="pre">parse_args()</span></code>. <code class="docutils literal notranslate"><span class="pre">cli()</span></code> can
-then be copied verbatim into your script.</p>
-<section id="main">
-<h3><code class="docutils literal notranslate"><span class="pre">main</span></code><a class="headerlink" href="#main" title="Link to this heading">#</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">main()</span></code> function serves as the entry point of your application. Typically,
-it will start as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="c1"># Imports</span>
-
-    <span class="n">args</span> <span class="o">=</span> <span class="n">parse_args</span><span class="p">()</span>
-
-    <span class="c1"># Application logic goes here</span>
-</pre></div>
-</div>
-<p>It is recommended to import all the necessary packages inside the <code class="docutils literal notranslate"><span class="pre">main</span></code>
-function to avoid slow scheduling of jobs, especially if you have heavy imports
-like Pytorch.</p>
-</section>
-<section id="parse-args">
-<h3><code class="docutils literal notranslate"><span class="pre">parse_args</span></code><a class="headerlink" href="#parse-args" title="Link to this heading">#</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">parse_args()</span></code> function is used to parse the command-line arguments. For
-example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">parse_args</span><span class="p">():</span>
-    <span class="kn">import</span> <span class="nn">argparse</span>
-
-    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Your application description here.&quot;</span><span class="p">)</span>
-    <span class="c1"># Define your arguments here</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--example&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Example argument&quot;</span><span class="p">)</span>
-    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">args</span>
-</pre></div>
-</div>
-</section>
-<section id="cli">
-<h3><code class="docutils literal notranslate"><span class="pre">cli()</span></code><a class="headerlink" href="#cli" title="Link to this heading">#</a></h3>
-<p>If you are using the <code class="docutils literal notranslate"><span class="pre">parse_args()</span></code> function, you can include this <code class="docutils literal notranslate"><span class="pre">cli()</span></code>
-function verbatim in your script</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">cli</span><span class="p">():</span>
-    <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">json</span>
-
-    <span class="n">args</span> <span class="o">=</span> <span class="n">parse_args</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="register-your-script">
-<h2>Register your Script<a class="headerlink" href="#register-your-script" title="Link to this heading">#</a></h2>
-<p>In order to schedule a script, both the <code class="docutils literal notranslate"><span class="pre">main()</span></code> and the <code class="docutils literal notranslate"><span class="pre">cli()</span></code> functions must
-be registered inside your environment as applications. In this section, we
-detail the steps necessary to achieve this, starting from the creation of a
-package in case your project is yet a package.</p>
-<section id="create-a-package">
-<h3>Create a Package<a class="headerlink" href="#create-a-package" title="Link to this heading">#</a></h3>
+<p>For <code class="docutils literal notranslate"><span class="pre">milex-schedule</span></code> to be able to schedule and run your scripts,
+some minimal structure is required.
+In short,
+a script must be installed in the virtual environment used to submit jobs.
+To accomplish this, the script must be registered in the <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file of a python package
+installed in the virtual environment.</p>
+<p>Once registered, no further actions are required to run and schedule a script.</p>
+<section id="creating-a-package">
+<h2>Creating a Package<a class="headerlink" href="#creating-a-package" title="Link to this heading">#</a></h2>
 <p>To create a package, you can follow the instructions in the
-<a class="reference external" href="https://packaging.python.org/en/latest/tutorials/packaging-projects/">Python Packaging User Guide</a>
-to create a package.</p>
-<p>Alternatively, you can adopt the following basic structure for a
-<code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file.</p>
+<a class="reference external" href="https://packaging.python.org/en/latest/tutorials/packaging-projects/">Python Packaging User Guide</a>.</p>
+<p>Here is a suggested <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> template.</p>
 <div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[build-system]</span>
 <span class="n">requires</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;setuptools&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;wheel&quot;</span><span class="p">]</span>
 <span class="n">build-backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;setuptools.build_meta&quot;</span>
@@ -444,43 +382,101 @@ to create a package.</p>
 <span class="n">authors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span><span class="n">name</span><span class="p">=</span><span class="s2">&quot;My Name&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">=</span><span class="s2">&quot;my_name@example.com&quot;</span><span class="p">},</span>
 <span class="w">    </span><span class="p">]</span>
-<span class="n">requires-python</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&gt;=3.8&quot;</span>
+<span class="n">requires-python</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&gt;=3.9&quot;</span>
+
+<span class="k">[project.scripts]</span>
+<span class="p">...</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file must be saved in the root of your project</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>my_package/
-├── pyproject.toml
 ├── src/
 │   └── name_of_package/
 │       ├── __init__.py
 │       └── script.py
+├── pyproject.toml
 └── README.md
 </pre></div>
 </div>
-<p>Once this file is created, you can install your package in your environment
-using the following command (from the root of your project)</p>
+<p>Once this file is created, you can use the following command from
+the root directory of <code class="docutils literal notranslate"><span class="pre">my_package</span></code> to install the package in your virtual environment</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </pre></div>
 </div>
-<p>This creates an editable installation of your package in your environment, which
-means that any changes you make to the package will be reflected in your
-environment.</p>
+<p>This creates an editable installation of your package in your environment.
+This implies that any changes you make to the package will be reflected in your
+environment without the need to reinstall the package.</p>
 </section>
-<section id="register-the-script-in-pyproject-toml">
-<h3>Register the Script in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code><a class="headerlink" href="#register-the-script-in-pyproject-toml" title="Link to this heading">#</a></h3>
-<p>Assuming that your script is in <code class="docutils literal notranslate"><span class="pre">my_package/src/name_of_package/script.py</span></code> and
-has the structure described above, you can register it in the <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>
-file by adding the following lines</p>
+<section id="registering-a-script-in-pyproject-toml">
+<h2>Registering a Script in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code><a class="headerlink" href="#registering-a-script-in-pyproject-toml" title="Link to this heading">#</a></h2>
+<p>Let’s assume the script is located in <code class="docutils literal notranslate"><span class="pre">my_package</span></code> at the following location</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>my_package/
+├── src/
+    └── name_of_package/
+        ├── __init__.py
+        └── script.py
+</pre></div>
+</div>
+<p>The function <code class="docutils literal notranslate"><span class="pre">main()</span></code> and <code class="docutils literal notranslate"><span class="pre">cli()</span></code> defined in <code class="docutils literal notranslate"><span class="pre">script.py</span></code> must be registered
+in the package’s <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file as follows</p>
 <div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[project.scripts]</span>
 <span class="n">my-script</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;name_of_package.script:main&quot;</span>
 <span class="n">my-script-cli</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;name_of_package.script:cli&quot;</span>
 </pre></div>
 </div>
-<p>Both <code class="docutils literal notranslate"><span class="pre">my-script</span></code> and <code class="docutils literal notranslate"><span class="pre">my-script-cli</span></code> must be registered in the <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>
-file for <code class="docutils literal notranslate"><span class="pre">milex-schedule</span></code> to be able to run your script.</p>
-<p>Once your script is registered, it can be scheduled and run using the
-<code class="docutils literal notranslate"><span class="pre">milex-schedule</span></code> and <code class="docutils literal notranslate"><span class="pre">milex-submit</span></code> commands. More information on these commands
-can be found in the <a class="reference internal" href="getting_started.html"><span class="std std-doc">Getting Started</span></a> section.</p>
+<p>A program with the suffix <code class="docutils literal notranslate"><span class="pre">-cli</span></code> must always be registered for each script
+to allow <code class="docutils literal notranslate"><span class="pre">milex-schedule</span></code> to capture the command-line arguments of the script.</p>
+<p>Once the <code class="docutils literal notranslate"><span class="pre">main</span></code> and <code class="docutils literal notranslate"><span class="pre">cli</span></code> functions are registered,
+<code class="docutils literal notranslate"><span class="pre">my-script</span></code> can be scheduled and submitted using the
+<code class="docutils literal notranslate"><span class="pre">milex-schedule</span></code> and <code class="docutils literal notranslate"><span class="pre">milex-submit</span></code> commands respectively.
+More information on these commands can be found in the <a class="reference internal" href="getting_started.html"><span class="std std-doc">Getting Started</span></a> section.</p>
+</section>
+<section id="the-main-and-cli-functions">
+<h2>The <code class="docutils literal notranslate"><span class="pre">main</span></code> and <code class="docutils literal notranslate"><span class="pre">cli</span></code> Functions<a class="headerlink" href="#the-main-and-cli-functions" title="Link to this heading">#</a></h2>
+<p>Some minimal structure is required on your script because <code class="docutils literal notranslate"><span class="pre">milex-schedule</span></code> can only
+compile the command-line arguments of your script if a function (which we call <code class="docutils literal notranslate"><span class="pre">cli</span></code>)
+prints these arguments on the console.</p>
+<p>As a solution, each script will minimally have to be provided with the following cli function (which can be copied verbatim):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">cli</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">json</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="parse-args">
+<h3><code class="docutils literal notranslate"><span class="pre">parse_args</span></code><a class="headerlink" href="#parse-args" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">parse_args()</span></code> function is used to parse the command-line arguments. It is
+an effective way to interact with a python script, and works well with
+the way we submit jobs. Here is a template to get you started:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">parse_args</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">argparse</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Your application description here.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--example&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Example argument&quot;</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">args</span>
+</pre></div>
+</div>
+</section>
+<section id="main">
+<h3><code class="docutils literal notranslate"><span class="pre">main</span></code><a class="headerlink" href="#main" title="Link to this heading">#</a></h3>
+<p>Finally, the <code class="docutils literal notranslate"><span class="pre">main()</span></code> function serves as the entry point of your application.
+We suggest the following structure</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">torch</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="c1"># Application logic goes here</span>
+</pre></div>
+</div>
+<p>It is recommended to import all the necessary packages inside the <code class="docutils literal notranslate"><span class="pre">main</span></code>
+function to avoid slow scheduling of jobs, especially if you have heavy imports
+like Pytorch.</p>
 </section>
 </section>
 </section>
@@ -540,15 +536,11 @@ can be found in the <a class="reference internal" href="getting_started.html"><s
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#script-structure">Script Structure</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#main"><code class="docutils literal notranslate"><span class="pre">main</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-package">Creating a Package</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registering-a-script-in-pyproject-toml">Registering a Script in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-main-and-cli-functions">The <code class="docutils literal notranslate"><span class="pre">main</span></code> and <code class="docutils literal notranslate"><span class="pre">cli</span></code> Functions</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parse-args"><code class="docutils literal notranslate"><span class="pre">parse_args</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cli"><code class="docutils literal notranslate"><span class="pre">cli()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#register-your-script">Register your Script</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-package">Create a Package</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#register-the-script-in-pyproject-toml">Register the Script in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#main"><code class="docutils literal notranslate"><span class="pre">main</span></code></a></li>
 </ul>
 </li>
 </ul>

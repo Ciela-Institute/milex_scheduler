@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -347,19 +347,18 @@ document.write(`
 <h1>Milex Scheduler<a class="headerlink" href="#milex-scheduler" title="Link to this heading">#</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">milex-scheduler</span></code> is a package that simplifies the process of scheduling and
 running jobs on a SLURM cluster. It provides an abstraction layer over the SLURM
-shell scripts focused on the following key features:</p>
+shell scripts and provides the following features:</p>
 <ul class="simple">
-<li><p>Schedule multiple jobs at once while handling dependencies by specifying job
-names</p></li>
-<li><p>Submitting jobs on different machines across SSH connections</p></li>
 <li><p>Reproducibility of job configurations</p>
 <ul>
-<li><p>Each job or bundle of jobs is saved as a JSON file with a unique timestamps</p></li>
-<li><p>SLURM shell script(s) are automatically generated (and submitted) from these
-JSON files</p></li>
 <li><p>User-agnostic job scheduling</p></li>
+<li><p>Job configurations saved in a human-readable format (JSON)</p></li>
+<li><p>Automated Job scheduling and submission</p></li>
 </ul>
 </li>
+<li><p>Bundling and submitting multiple jobs together with a single command</p></li>
+<li><p>Dependency between jobs managed using names instead of SLURM specific job IDs</p></li>
+<li><p>Submitting jobs remotely across SSH connections</p></li>
 </ul>
 <div class="toctree-wrapper compound">
 <ul>

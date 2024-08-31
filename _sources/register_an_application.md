@@ -1,83 +1,20 @@
 # Register a script
 
-In order to schedule and submit your scripts, you will have to construct your
-script with a specific structure. You will also need to register them in your
-package's `pyproject.toml` file in order for `milex-schedule` to be able to be
-able to run them.
+For `milex-schedule` to be able to schedule and run your scripts,
+some minimal structure is required.
+In short,
+a script must be installed in the virtual environment used to submit jobs.
+To accomplish this, the script must be registered in the `pyproject.toml` file of a python package
+installed in the virtual environment.
 
-## Script Structure
+Once registered, no further actions are required to run and schedule a script.
 
-A script must be populated with 3 functions, namely `main()`, `parse_args()` and
-`cli()`. The advantage of this structure is that `cli()`, a crucial function for
-scheduling and running your script, will always be identical. This allows you to
-copy paste `cli()` into all your scripts without modification.
-
-Below, we detail the design principles of `main()`, `parse_args()`. `cli()` can
-then be copied verbatim into your script.
-
-### `main`
-
-The `main()` function serves as the entry point of your application. Typically,
-it will start as follows:
-
-```python
-def main():
-    # Imports
-
-    args = parse_args()
-
-    # Application logic goes here
-```
-
-It is recommended to import all the necessary packages inside the `main`
-function to avoid slow scheduling of jobs, especially if you have heavy imports
-like Pytorch.
-
-### `parse_args`
-
-The `parse_args()` function is used to parse the command-line arguments. For
-example
-
-```python
-def parse_args():
-    import argparse
-
-    parser = argparse.ArgumentParser(description="Your application description here.")
-    # Define your arguments here
-    parser.add_argument("--example", type=str, help="Example argument")
-    args = parser.parse_args()
-    return args
-```
-
-### `cli()`
-
-If you are using the `parse_args()` function, you can include this `cli()`
-function verbatim in your script
-
-```python
-def cli():
-    import sys, json
-
-    args = parse_args()
-    print(json.dumps(vars(args), indent=4))
-    sys.exit(0)
-```
-
-## Register your Script
-
-In order to schedule a script, both the `main()` and the `cli()` functions must
-be registered inside your environment as applications. In this section, we
-detail the steps necessary to achieve this, starting from the creation of a
-package in case your project is yet a package.
-
-### Create a Package
+## Creating a Package
 
 To create a package, you can follow the instructions in the
-[Python Packaging User Guide](https://packaging.python.org/en/latest/tutorials/packaging-projects/)
-to create a package.
+[Python Packaging User Guide](https://packaging.python.org/en/latest/tutorials/packaging-projects/).
 
-Alternatively, you can adopt the following basic structure for a
-`pyproject.toml` file.
+Here is a suggested `pyproject.toml` template.
 
 ```toml
 [build-system]
@@ -91,37 +28,49 @@ description = "A short description of my package"
 authors = [
     {name="My Name", email="my_name@example.com"},
     ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
+
+[project.scripts]
+...
 ```
 
 The `pyproject.toml` file must be saved in the root of your project
 
 ```
 my_package/
-├── pyproject.toml
 ├── src/
 │   └── name_of_package/
 │       ├── __init__.py
 │       └── script.py
+├── pyproject.toml
 └── README.md
 ```
 
-Once this file is created, you can install your package in your environment
-using the following command (from the root of your project)
+Once this file is created, you can use the following command from
+the root directory of `my_package` to install the package in your virtual environment
 
 ```shell
 pip install -e .
 ```
 
-This creates an editable installation of your package in your environment, which
-means that any changes you make to the package will be reflected in your
-environment.
+This creates an editable installation of your package in your environment.
+This implies that any changes you make to the package will be reflected in your
+environment without the need to reinstall the package.
 
-### Register the Script in `pyproject.toml`
 
-Assuming that your script is in `my_package/src/name_of_package/script.py` and
-has the structure described above, you can register it in the `pyproject.toml`
-file by adding the following lines
+## Registering a Script in `pyproject.toml`
+
+Let's assume the script is located in `my_package` at the following location
+```
+my_package/
+├── src/
+    └── name_of_package/
+        ├── __init__.py
+        └── script.py
+```
+
+The function `main()` and `cli()` defined in `script.py` must be registered
+in the package's `pyproject.toml` file as follows
 
 ```toml
 [project.scripts]
@@ -129,9 +78,64 @@ my-script     = "name_of_package.script:main"
 my-script-cli = "name_of_package.script:cli"
 ```
 
-Both `my-script` and `my-script-cli` must be registered in the `pyproject.toml`
-file for `milex-schedule` to be able to run your script.
+A program with the suffix `-cli` must always be registered for each script
+to allow `milex-schedule` to capture the command-line arguments of the script.
 
-Once your script is registered, it can be scheduled and run using the
-`milex-schedule` and `milex-submit` commands. More information on these commands
-can be found in the [Getting Started](./getting_started.md) section.
+Once the `main` and `cli` functions are registered,
+`my-script` can be scheduled and submitted using the
+`milex-schedule` and `milex-submit` commands respectively.
+More information on these commands can be found in the [Getting Started](./getting_started.md) section.
+
+## The `main` and `cli` Functions
+
+Some minimal structure is required on your script because `milex-schedule` can only
+compile the command-line arguments of your script if a function (which we call `cli`)
+prints these arguments on the console.
+
+As a solution, each script will minimally have to be provided with the following cli function (which can be copied verbatim):
+
+```python
+def cli():
+    import sys, json
+
+    args = parse_args()
+
+    print(json.dumps(vars(args), indent=4))
+    sys.exit(0)
+```
+
+### `parse_args`
+
+The `parse_args()` function is used to parse the command-line arguments. It is
+an effective way to interact with a python script, and works well with
+the way we submit jobs. Here is a template to get you started:
+
+```python
+def parse_args():
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Your application description here.")
+    parser.add_argument("--example", type=str, help="Example argument")
+
+    args = parser.parse_args()
+    return args
+```
+
+
+### `main`
+
+Finally, the `main()` function serves as the entry point of your application.
+We suggest the following structure
+
+```python
+def main():
+    import torch
+
+    args = parse_args()
+
+    # Application logic goes here
+```
+
+It is recommended to import all the necessary packages inside the `main`
+function to avoid slow scheduling of jobs, especially if you have heavy imports
+like Pytorch.
