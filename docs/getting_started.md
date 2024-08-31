@@ -117,3 +117,32 @@ milex-schedule job3 --append --bundle=my-bundle \
   topological order before submission.
   <!--- `--dependency_type` can be a list of same length as `--dependencies` or a-->
     <!--single value to be broadcasted.-->
+
+
+### Pre-commands
+
+Commands like copying files or creating directories can be
+executed before the python script by using the `--pre-command` argument when scheduling a job.
+
+```bash
+milex-schedule my-script \
+    --pre-command "mkdir -p /path/to/my/directory"
+    ...
+```
+Multiple pre-commands are provided by separating them with a semicolon
+
+```bash
+milex-schedule my-script \
+    --pre-command "mkdir -p /path/to/my/directory; cp /path/to/my/file /path/to/my/directory"
+    ...
+```
+
+Or separating them with a space
+
+```bash
+milex-schedule my-script \
+    --pre-command \
+    "mkdir -p /path/to/my/directory" \
+    "cp /path/to/my/file /path/to/my/directory"\
+    ...
+```

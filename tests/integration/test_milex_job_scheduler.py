@@ -33,7 +33,7 @@ def mock_parse_known_args():
         mock_parse_known_args.return_value = (
             Namespace(
                 script="job_name",
-                bundle="bundle_name",
+                name="bundle_name",
                 job=None,
                 append=False,
                 submit=False,
@@ -140,7 +140,7 @@ def test_main(mock_submit_job, mock_parse_known_args, mock_run, mock_load_config
     mock_parse_known_args.return_value = (
         Namespace(
             script="job_name",
-            bundle="bundle_name",
+            name="bundle_name",
             job=None,
             append=False,
             submit=True,
