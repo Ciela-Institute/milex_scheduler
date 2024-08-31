@@ -43,12 +43,11 @@ def parse_script_args(script, unknown_args) -> dict:
 
 def parse_args():
     # fmt: off
-    parser = argparse.ArgumentParser(description='Schedule a job to run with SLURM, alone or as part of a '
-                                                 'set of a bundle of jobs (using the --append command).')
+    parser = argparse.ArgumentParser(description='Schedule a job for a SLURM cluster.')
 
-    parser.add_argument('script', help='Name of the script to schedule.')
-    parser.add_argument('--bundle', default=None, help='Name of the job bundle (JSON file containing multiple jobs/scripts to be scheduled). '
-                                                       'If not provided, the script name is used as the bundle name.')
+    parser.add_argument('script',                        help='Name of the script to schedule.')
+    parser.add_argument('--name',   default=None,        help='Name of the job bundle (JSON file containing multiple jobs/scripts to be scheduled). '
+                                                              'If not provided, the script name is used as the bundle name.')
     parser.add_argument('--append', action='store_true', help='Append the job to an existing bundle. '
                                                               'If not provided, a new unique bundle is created using current timestamp.')
     parser.add_argument('--submit', action='store_true', help='Submit the job immediately after scheduling it.')
@@ -101,7 +100,7 @@ def main():
         },
     }
 
-    name = args.bundle if args.bundle is not None else args.script
+    name = args.name if args.name is not None else args.script
     save_job(job, bundle_name=name, append=args.append)
 
     if args.submit:

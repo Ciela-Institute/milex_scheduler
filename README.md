@@ -5,16 +5,15 @@
 
 `milex-scheduler` is a package that simplifies the process of scheduling and
 running jobs on a SLURM cluster. It provides an abstraction layer over the SLURM
-shell scripts focused on the following key features:
+shell scripts and provides the following features:
 
-- Schedule multiple jobs at once while handling dependencies by specifying job
-  names
-- Submitting jobs on different machines across SSH connections
 - Reproducibility of job configurations
-  - Each job or bundle of jobs is saved as a JSON file with a unique timestamps
-  - SLURM shell script(s) are automatically generated (and submitted) from these
-    JSON files
   - User-agnostic job scheduling
+  - Job configurations saved in a human-readable format (JSON)
+  - Automated Job scheduling and submission
+- Bundling and submitting multiple jobs together with a single command
+- Dependency between jobs managed using names instead of SLURM specific job IDs
+- Submitting jobs remotely across SSH connections
 
 ## Installation
 
@@ -32,9 +31,9 @@ pip install -e .
 milex-configuration
 ```
 
-This command will allow you to configure paths and user-specific details for
-your local and remote SLURM machines. More details can be found in the
-[Milex Configuration](#Milex-Configuration) section.
+This command will configure the user-specific details required to connect to
+remote SLURM machines and activate virtual environments.
+More details can be found in the [Milex Configuration](#Milex-Configuration) section.
 
 ### Register your application in the `pyproject.toml` file of your package
 
@@ -52,7 +51,7 @@ section.
 ### Schedule a job
 
 ```bash
-milex-schedule my-script \
+milex-schedule my-script --name=my-script \
     # Application args
     --my_job_arg1=arg1 \
     # SLURM args
@@ -63,7 +62,11 @@ milex-schedule my-script \
 ```
 
 This command schedules `my-script` to run for 1 hour, using 1 CPU, 1 GPU, and
-16GB of memory.
+16GB of memory. Note that both the application-specific arguments and SLURM
+arguments are passed in the same command.
+
+The `--name` argument is optional and is used to specify the name of the job. If
+not provided, the name of the script is used.
 
 ### Submit a job
 
@@ -86,42 +89,52 @@ milex-schedule my-script --submit --machine=machine\
 
 ### Schedule multiple jobs
 
-Use the `--append` keyword to combine multiple jobs in a bundle. Use the
-`--bundle` keyword to specify the name of the bundle.
+Use the `--append` keyword to include additional jobs in a bundle. Use the
+`--name` keyword to specify the name of the bundle.
 
 ```bash
-# Schedule job1
-milex-schedule job1 --bundle=my-bundle
-# Append job2 to the same bundle
-milex-schedule job2 --append --bundle=my-bundle
-# Submit the bundle
-milex-submit my-bundle
+milex-schedule job1 --name=my-bundle
+milex-schedule job2 --append --name=my-bundle
 ```
 
-**Notes**:
+You can then submit the bundle using the `milex-submit` command.
+```bash
+milex-submit my-bundle --machine=machine
+```
 
-- In case `--append` is not used, two bundles (each with a single job) are
-  created, each with unique timestamps. Only job2 would be submitted in the last
-  example.
+In case `--append` is not used, two bundles will instead be created.
+Each job will have a unique timestamps.
+```
+$MILEX
+└─ jobs
+    ├─ my-bundle_210901120000
+    └─ my-bundle_210901120001
+```
+Furthermore, only the last bundle created will be submitted in the last example,
+instead of both. This is because the default behavior is to submit the last bundle created.
+
+<!--TODO:-->
+<!--If you wanted to launch a bundle created previously to the last one, -->
+<!--you can use the `--date` argument. The bundle submitted will be the -->
+<!--one closest to the date specified (in an absolute sense).-->
+<!--```bash-->
+<!--```-->
 
 ### Schedule jobs with dependencies
 
-Dependencies can be set by specifying the job names in the `--dependencies`
-argument.
-
+Dependencies can be set by specifying the name of the job
+using the `--dependencies` argument.
 ```bash
-milex-schedule job1 --bundle=my-bundle
-# Create a dependency on job1
-milex-schedule job2 --append --bundle=my-bundle --dependencies job1
+milex-schedule job2 --append --name=my-bundle --dependencies job1
+```
+In this example, `job2` will only be submitted once `job1` has completed.
+
+Multiple dependencies can be added as follows
+```bash
+milex-schedule job3 --append --name=my-bundle --dependencies job1 job2
 ```
 
-Multiple dependencies can be set by separating the job names with a space.
-
-```bash
-milex-schedule job3 --append --bundle=my-bundle \
-    --dependencies job1 job2
-```
-
+<!--TODO-->
 <!--The `--dependency_type` argument specifies the type of dependency. The default-->
 <!--is `afterany`.-->
 
