@@ -48,6 +48,7 @@ def parse_args():
     parser.add_argument('script',                        help='Name of the script to schedule.')
     parser.add_argument('--name',   default=None,        help='Name of the job bundle (JSON file containing multiple jobs/scripts to be scheduled). '
                                                               'If not provided, the script name is used as the bundle name.')
+    parser.add_argument('--job_name', default=None,      help='Name of the job to schedule. If not provided, the script name is used as the job name.')
     parser.add_argument('--append', action='store_true', help='Append the job to an existing bundle. '
                                                               'If not provided, a new unique bundle is created using current timestamp.')
     parser.add_argument('--submit', action='store_true', help='Submit the job immediately after scheduling it.')
@@ -86,6 +87,7 @@ def parse_args():
 def main():
     args, script_args = parse_args()
     job = {
+        "name": args.script if args.job_name is None else args.job_name,
         "script": args.script,
         "script_args": script_args,
         "dependencies": args.dependencies,

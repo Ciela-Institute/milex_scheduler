@@ -34,6 +34,7 @@ def mock_parse_known_args():
             Namespace(
                 script="job_name",
                 name="bundle_name",
+                job_name=None,
                 job=None,
                 append=False,
                 submit=False,
@@ -115,7 +116,7 @@ def test_parse_script_args_success(mock_run):
 # )
 
 
-def test_cli(mock_parse_known_args, mock_run):
+def test_schedule_cli(mock_parse_known_args, mock_run):
     # Adjust the mock to return a JSON string that matches the expected output from the CLI application
     mock_run.return_value = MagicMock(
         returncode=0,
@@ -128,7 +129,9 @@ def test_cli(mock_parse_known_args, mock_run):
     assert expected_job_args == {"custom_arg1": "value1", "custom_arg2": "value2"}
 
 
-def test_main(mock_submit_job, mock_parse_known_args, mock_run, mock_load_config):
+def test_schedule_main(
+    mock_submit_job, mock_parse_known_args, mock_run, mock_load_config
+):
     # Adjust mock_run to simulate the output from a successful CLI application run
     mock_run.return_value = MagicMock(
         returncode=0,
@@ -141,6 +144,7 @@ def test_main(mock_submit_job, mock_parse_known_args, mock_run, mock_load_config
         Namespace(
             script="job_name",
             name="bundle_name",
+            job_name=None,
             job=None,
             append=False,
             submit=True,
