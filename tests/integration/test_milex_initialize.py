@@ -8,7 +8,7 @@ import os
 @pytest.fixture
 def mock_parse_known_args():
     with patch("argparse.ArgumentParser.parse_args") as mock_parse_known_args:
-        mock_parse_known_args.return_value = Namespace(bundle="bundle_name")
+        mock_parse_known_args.return_value = Namespace(name="bundle_name")
         yield mock_parse_known_args
 
 
@@ -22,5 +22,5 @@ def mock_load_config(tmp_path):
         yield mock_load_config
 
 
-def test_main(mock_parse_known_args, mock_load_config):
+def test_milex_initialize_main(mock_parse_known_args, mock_load_config):
     main()
