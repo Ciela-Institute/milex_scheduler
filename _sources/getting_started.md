@@ -71,22 +71,24 @@ milex-schedule my-script --submit --machine=machine\
 ### Schedule multiple jobs
 
 Use the `--append` keyword to combine multiple jobs in a bundle. Use the
-`--bundle` keyword to specify the name of the bundle.
+`--name` keyword to specify the name of the bundle.
 
 ```bash
-# Schedule job1
-milex-schedule job1 --bundle=my-bundle
-# Append job2 to the same bundle
-milex-schedule job2 --append --bundle=my-bundle
-# Submit the bundle
+milex-schedule job1 --name=my-bundle
+milex-schedule job2 --append --name=my-bundle
 milex-submit my-bundle
 ```
 
-**Notes**:
+An empty bundle can be initialized as follows
+```bash
+milex-initialize my-bundle
+```
+Jobs can then be appended to this bundle using `milex-schedule --append --name=my-bundle`.
+This is useful when you want to schedule jobs in a loop.
 
-- In case `--append` is not used, two bundles (each with a single job) are
-  created with unique timestamps. Only job2 would be submitted in the last
-  example.
+**Warning**: In case `--append` is not used, two bundles (each with a single job) are
+created with unique timestamps. Only the last bundle created is submitted.
+
 
 ### Schedule jobs with dependencies
 
@@ -94,15 +96,14 @@ Dependencies can be set by specifying the job names in the `--dependencies`
 argument.
 
 ```bash
-milex-schedule job1 --bundle=my-bundle
-# Create a dependency on job1
-milex-schedule job2 --append --bundle=my-bundle --dependencies job1
+milex-schedule job1 --name=my-bundle
+milex-schedule job2 --append --name=my-bundle --dependencies job1
 ```
 
 Multiple dependencies can be set by separating the job names with a space.
 
 ```bash
-milex-schedule job3 --append --bundle=my-bundle \
+milex-schedule job3 --append --name=my-bundle \
     --dependencies job1 job2
 ```
 

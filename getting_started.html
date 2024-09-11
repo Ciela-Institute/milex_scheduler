@@ -433,33 +433,31 @@ schedule and submit a job at the same time to skip a step.</p>
 <section id="schedule-multiple-jobs">
 <h3>Schedule multiple jobs<a class="headerlink" href="#schedule-multiple-jobs" title="Link to this heading">#</a></h3>
 <p>Use the <code class="docutils literal notranslate"><span class="pre">--append</span></code> keyword to combine multiple jobs in a bundle. Use the
-<code class="docutils literal notranslate"><span class="pre">--bundle</span></code> keyword to specify the name of the bundle.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Schedule job1</span>
-milex-schedule<span class="w"> </span>job1<span class="w"> </span>--bundle<span class="o">=</span>my-bundle
-<span class="c1"># Append job2 to the same bundle</span>
-milex-schedule<span class="w"> </span>job2<span class="w"> </span>--append<span class="w"> </span>--bundle<span class="o">=</span>my-bundle
-<span class="c1"># Submit the bundle</span>
+<code class="docutils literal notranslate"><span class="pre">--name</span></code> keyword to specify the name of the bundle.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>milex-schedule<span class="w"> </span>job1<span class="w"> </span>--name<span class="o">=</span>my-bundle
+milex-schedule<span class="w"> </span>job2<span class="w"> </span>--append<span class="w"> </span>--name<span class="o">=</span>my-bundle
 milex-submit<span class="w"> </span>my-bundle
 </pre></div>
 </div>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p>In case <code class="docutils literal notranslate"><span class="pre">--append</span></code> is not used, two bundles (each with a single job) are
-created with unique timestamps. Only job2 would be submitted in the last
-example.</p></li>
-</ul>
+<p>An empty bundle can be initialized as follows</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>milex-initialize<span class="w"> </span>my-bundle
+</pre></div>
+</div>
+<p>Jobs can then be appended to this bundle using <code class="docutils literal notranslate"><span class="pre">milex-schedule</span> <span class="pre">--append</span> <span class="pre">--name=my-bundle</span></code>.
+This is useful when you want to schedule jobs in a loop.</p>
+<p><strong>Warning</strong>: In case <code class="docutils literal notranslate"><span class="pre">--append</span></code> is not used, two bundles (each with a single job) are
+created with unique timestamps. Only the last bundle created is submitted.</p>
 </section>
 <section id="schedule-jobs-with-dependencies">
 <h3>Schedule jobs with dependencies<a class="headerlink" href="#schedule-jobs-with-dependencies" title="Link to this heading">#</a></h3>
 <p>Dependencies can be set by specifying the job names in the <code class="docutils literal notranslate"><span class="pre">--dependencies</span></code>
 argument.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>milex-schedule<span class="w"> </span>job1<span class="w"> </span>--bundle<span class="o">=</span>my-bundle
-<span class="c1"># Create a dependency on job1</span>
-milex-schedule<span class="w"> </span>job2<span class="w"> </span>--append<span class="w"> </span>--bundle<span class="o">=</span>my-bundle<span class="w"> </span>--dependencies<span class="w"> </span>job1
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>milex-schedule<span class="w"> </span>job1<span class="w"> </span>--name<span class="o">=</span>my-bundle
+milex-schedule<span class="w"> </span>job2<span class="w"> </span>--append<span class="w"> </span>--name<span class="o">=</span>my-bundle<span class="w"> </span>--dependencies<span class="w"> </span>job1
 </pre></div>
 </div>
 <p>Multiple dependencies can be set by separating the job names with a space.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>milex-schedule<span class="w"> </span>job3<span class="w"> </span>--append<span class="w"> </span>--bundle<span class="o">=</span>my-bundle<span class="w"> </span><span class="se">\</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>milex-schedule<span class="w"> </span>job3<span class="w"> </span>--append<span class="w"> </span>--name<span class="o">=</span>my-bundle<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--dependencies<span class="w"> </span>job1<span class="w"> </span>job2
 </pre></div>
 </div>
