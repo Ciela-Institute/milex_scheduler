@@ -8,6 +8,7 @@ from .job_dependency import dependency_graph
 from typing import Optional
 from graphlib import TopologicalSorter
 from datetime import datetime, timedelta
+import warnings
 import subprocess
 import json
 import os
@@ -63,6 +64,11 @@ def save_bundle(
             date = datetime.now()
             _, nearest_date = nearest_bundle_filename(name)
             if date - nearest_date < timedelta(seconds=1):
+                warnings.warn(
+                    "Found a job saved at the same time. "
+                    "If you wanted the job to be appended to a bundle instead, "
+                    "use the flags --append and --name=name_of_bundle."
+                )
                 date += timedelta(seconds=1)
         except FileNotFoundError:
             pass
