@@ -12,9 +12,10 @@ def create_slurm_script(job: dict, date: datetime, machine_config: dict) -> str:
     user_settings = load_config()
     path = os.path.join(user_settings["local"]["path"], "slurm")
     slurm_name = name_slurm_script(job, date)
-    with open(os.path.join(path, slurm_name), "w") as f:
+    file_path = os.path.join(path, slurm_name)
+    with open(file_path, "w") as f:
         write_slurm_content(f, job, machine_config)
-    print(f"Saved SLURM script for job {job['name']} saved to {path}")
+    print(f"Saved SLURM script for job {job['name']} saved to {file_path}")
     return slurm_name
 
 
