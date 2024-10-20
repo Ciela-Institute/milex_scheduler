@@ -7,7 +7,7 @@ name = "milex_scheduler"
 authors = [
     {name = "Alexandre Adam", email = "alexandre.adam@umontreal.ca"}
     ]
-description = "The Milex project job scheduler for the HPC cluster and code reproducibility"
+description = "The Milex project job scheduler designed for HPC cluster scheduling and code reproducibility"
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = []

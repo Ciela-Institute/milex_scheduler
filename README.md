@@ -17,7 +17,7 @@ shell scripts and provides the following features:
 
 ## Documentation
 
-You can gind the full documentation [here](https://milex-scheduler.readthedocs.io/en/latest/).
+You can find the full documentation [here](https://milex-scheduler.readthedocs.io/en/latest/).
 
 ## Installation
 
